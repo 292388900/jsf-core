@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+	
+	<!-- 控制台输出全部 日志 -->
+	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %p %c - %m%n" />
+		</layout>
+	</appender>
+	
+	<!-- 插入db  -->
+	<!-- 过滤器，只添加error及以上级别 -->
+<!-- 	<appender name="DB" class="com.ipd.saf.interceptor.log4j.MyJDBCAppender"> -->
+<!-- 		<param name="bufferSize" value="10" /> -->
+<!-- 		<layout class="org.apache.log4j.PatternLayout"> -->
+<!-- 			<param name="ConversionPattern" value="insert into system_log(class_name,method_name,create_time,log_level,msg) values ('%C','%M','%d{yyyy-MM-dd HH:mm:ss}','%p','m_%m%n')" /> -->
+<!-- 		</layout> -->
+<!-- 		 <filter class="org.apache.log4j.varia.LevelRangeFilter">   -->
+<!-- 		     <param name="LevelMin" value="ERROR" />   -->
+<!-- 		     <param name="LevelMax" value="FATAL" />       -->
+<!-- 		     <param name="AcceptOnMatch" value="true" />   -->
+<!-- 		  </filter>   -->
+<!-- 	</appender> -->
+	
+	<root>
+		<level value="ERROR" />
+		<appender-ref ref="CONSOLE" />
+<!-- 		<appender-ref ref="DB" /> -->
+	</root> 
+	
+</log4j:configuration>

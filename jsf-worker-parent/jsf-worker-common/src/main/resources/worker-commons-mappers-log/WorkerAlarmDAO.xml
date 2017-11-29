@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ipd.jsf.worker.common.log.dao.WorkerAlarmDAO">
+    <insert id="insertWorkerAlarm" parameterType="com.ipd.jsf.worker.common.domain.WorkerAlarm" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        saf_alarm_history(
+            `alarm_key`,
+            `interface_name`,
+            `method_name`,
+            `content`,
+            alarm_type,
+            erps,
+            is_alarmed,
+            create_time)
+        VALUES(
+            #{alarmKey},
+            #{interfaceName},
+            #{methodName},
+            #{content},
+            #{alarmType},
+            #{erps},
+            #{alarmed},
+            #{createTime}
+            )
+    </insert>
+</mapper>

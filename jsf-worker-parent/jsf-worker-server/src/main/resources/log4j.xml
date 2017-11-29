@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
+	debug="false">
+	
+	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %t %5p [%c:%M:%L] - %m%n" />
+		</layout>
+	</appender>
+	
+	<appender name="File" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="encoding" value="utf-8" />
+		<param name="File" value="${saf_logpath}saf_worker.log" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %t %5p [%c:%M:%L] - %m%n" />
+		</layout>
+	</appender>
+
+	<appender name="DBLogFile" class="org.apache.log4j.DailyRollingFileAppender">
+	    <param name="encoding" value="utf-8" />
+	    <param name="File" value="${saf_logpath}saf_worker_sql.log" />
+	    <layout class="org.apache.log4j.PatternLayout">
+	        <param name="ConversionPattern" value="%d %t %5p [%c:%M:%L] - %m%n" />
+	    </layout>
+	</appender>
+
+	<appender name="deleteRedundantAliasWorkerLogFile" class="org.apache.log4j.RollingFileAppender">
+		<param name="encoding" value="utf-8" />
+		<param name="File" value="${saf_logpath}deleteRedundantAliasWorkerLogFile.log" />
+		<param name="Append" value="true"/>
+		<param name="MaxFileSize" value="512MB"/>
+		<param name="MaxBackupIndex" value="5"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %t %5p [%c:%M:%L] - %m%n" />
+		</layout>
+	</appender>
+
+	<logger name="org.apache.zookeeper">
+		<level value="WARN"></level>
+	</logger>
+	<category name="org.apache.ibatis" additivity="true">
+        <priority value="DEBUG" />
+        <appender-ref ref="CONSOLE" />
+    </category>
+
+
+	<logger name="com.ipd.jsf.worker.util.DBLog">
+		<level value="INFO"/>
+		<appender-ref ref="DBLogFile"/>
+	</logger>
+
+	<logger name="com.ipd.jsf.worker.thread.alias.DeleteRedundantAliasWorker">
+		<level value="INFO"/>
+		<appender-ref ref="deleteRedundantAliasWorkerLogFile"/>
+	</logger>
+
+	<root>
+		<level value="INFO" />
+		<appender-ref ref="File" />
+		<appender-ref ref="CONSOLE" />
+	</root>
+
+</log4j:configuration>

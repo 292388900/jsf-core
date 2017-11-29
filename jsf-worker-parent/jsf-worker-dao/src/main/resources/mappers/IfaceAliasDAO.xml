@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ipd.jsf.worker.dao.IfaceAliasDAO">
+
+    <!--获取一个接口下的所有alias对应的版本号-->
+    <select id="getAliasVersionByIfaceId" resultType="com.ipd.jsf.version.common.domain.IfaceAliasVersion">
+        <![CDATA[
+        SELECT
+        	interface_id as interfaceId, alias as alias, update_time as updateTime
+        FROM jsf_ifacealias_version
+        WHERE
+            interface_id = #{interfaceId}
+        ]]>
+    </select>
+
+
+    <!--插入alias-->
+    <insert id="insertAlias">
+        <![CDATA[
+        INSERT INTO jsf_ifacealias_version
+        VALUES (
+        #{interfaceId},
+        #{alias},
+        #{updateTimestamp},
+        #{updateTime}
+        )
+        ]]>
+    </insert>
+
+
+    <select id="getAliasVersionBeforeTime" resultType="com.ipd.jsf.version.common.domain.IfaceAliasVersion">
+        <![CDATA[
+        SELECT
+        	interface_id as interfaceId, alias as alias, update_time as updateTime
+        FROM jsf_ifacealias_version
+        WHERE
+            update_time < #{updateTime}
+        ]]>
+    </select>
+
+
+    <delete id="deleteAlias">
+        delete from
+        jsf_ifacealias_version
+        where
+        interface_id = #{ifaceAliasVersion.interfaceId} AND alias = #{ifaceAliasVersion.alias}
+    </delete>
+
+</mapper>

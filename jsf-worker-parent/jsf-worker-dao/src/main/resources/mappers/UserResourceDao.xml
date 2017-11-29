@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ipd.jsf.worker.dao.UserResourceDao">
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+		insert into 
+		saf_user_resource
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			pin,
+			resId,
+			roleId,
+			resType,
+			pcType
+		</trim>
+		values
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			#{pin},
+			#{resId},
+			#{roleId},
+			#{resType},
+			#{pcType}
+		</trim> 
+	</insert>
+	
+	<insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="true" keyColumn="id">
+		insert into 
+		saf_user_resource
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			pin,
+			resId,
+			roleId,
+			resType,
+			pcType
+		</trim>
+		values
+		<foreach collection="list" item="item" index="index" separator="," >
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			#{item.pin},
+			#{item.resId},
+			#{item.roleId},
+			#{item.resType},
+			#{item.pcType}
+		</trim> 
+        </foreach>  
+	</insert>
+	
+	<delete id="batchDelete">
+		delete 
+		from 
+		saf_user_resource
+		where
+		pin = #{params.pin} and resType = #{params.resType} and 
+		resId in
+		<foreach collection="params.resourceIds" item="item" index="index" open="(" separator="," close=")" >
+		    #{item}
+        </foreach>  
+	</delete>
+	
+	<delete id="deleteByResource">
+		delete 
+		from 
+		saf_user_resource
+		where
+		resId = #{resId} and resType = #{resType}
+	</delete>
+	
+	<select id="findAuthErps" resultType="java.lang.String">
+		select distinct pin  
+		from 
+		saf_user_resource
+		where
+		resId = #{resId} and resType = #{resType} and pcType=1
+	</select>
+	<select id="findAuthErpsByIface" resultType="java.lang.String">
+		select pin  
+		from 
+		saf_user_resource
+		where
+		resId in (select id from saf_interface where interfaceName=#{iface}) and resType = #{resType} 
+		and pcType=1
+	</select>
+
+	<select id="findResIdsByPin" resultType="Integer">
+	    select 
+	    distinct resId 
+	    from 
+	    saf_user_resource 
+	    where pin = #{pin}
+	</select>
+	
+	
+	<select id="isExists" resultType="int">
+        select 
+        count(*)
+        from 
+        saf_user_resource
+        where 
+        pin = #{pin} and resId = #{resId} and resType = #{resType}
+        <if test="roleId != null">and roleId = #{roleId}</if>
+		<if test="pcType != null">and pcType = #{pcType}</if>
+	</select>
+</mapper>

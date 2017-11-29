@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.registry.dao.ScanStatusLogDao">
+
+    <insert id="create">
+        <![CDATA[
+        INSERT INTO saf_scanstatus_log(
+        	ip,
+        	pid,
+        	ins_key,
+        	interface_name,
+        	detail_info,
+        	scan_type,
+        	creator,
+        	creator_ip,
+        	create_time,
+        	del_type)
+        VALUES (
+        	#{ip},
+        	#{pid},
+        	#{insKey},
+        	#{interfaceName},
+        	#{detailInfo},
+        	#{type},
+        	#{creator},
+        	#{creatorIp},
+        	#{createTime},
+        	4
+        	)
+        ]]>
+    </insert>
+</mapper>

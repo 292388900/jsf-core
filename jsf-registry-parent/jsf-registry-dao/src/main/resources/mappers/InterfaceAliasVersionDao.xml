@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.registry.dao.InterfaceAliasVersionDao">
+
+    <resultMap type="IfaceAliasVersion"  id="IfaceAliasVersionResultMap">
+        <id column="interface_id" property="interfaceId"  jdbcType="INTEGER"/>
+        <result column="alias" property="alias" />
+        <result column="update_timestamp" property="dataVersion" />
+    </resultMap>
+
+	<select id="getAllList" resultMap="IfaceAliasVersionResultMap">
+        SELECT
+        	a.interface_id, a.alias, a.update_timestamp
+        FROM jsf_ifacealias_version a
+        LIMIT #{start}, #{limit}
+    </select>
+
+    <select id="getChangeList" resultMap="IfaceAliasVersionResultMap">
+        <![CDATA[
+        SELECT
+        	interface_id, alias, update_timestamp
+        FROM jsf_ifacealias_version 
+        WHERE
+            update_timestamp >= #{time}
+        LIMIT #{start}, #{limit}
+        ]]>
+    </select>
+
+    <select id="getListByIfaceIdAliasList" resultMap="IfaceAliasVersionResultMap">
+        <![CDATA[
+        SELECT
+        	interface_id, alias, update_timestamp
+        FROM jsf_ifacealias_version 
+        WHERE
+            (interface_id, alias) IN
+        ]]>
+        <foreach item="item" collection="list" open="(" separator="," close=")">
+            (#{item.interfaceId}, #{item.alias})
+        </foreach> 
+    </select>
+
+    <select id="getListByIfaceIdList" resultMap="IfaceAliasVersionResultMap">
+        <![CDATA[
+        SELECT
+        	interface_id, alias, update_timestamp
+        FROM jsf_ifacealias_version
+        WHERE
+            interface_id IN
+        ]]>
+        <foreach item="item" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach> 
+    </select>
+
+</mapper>

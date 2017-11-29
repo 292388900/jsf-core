@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.registry.dao.ServerSetDao">
+    <resultMap type="ServerSet"  id="ServerSetResultMap">
+        <result column="interface_id" property="interfaceId" />
+        <result column="server_id" property="serverId" />
+        <result column="value" property="value" />
+    </resultMap>
+
+    <delete id="delete">
+        DELETE FROM saf_server_set 
+      	WHERE
+            server_id = #{serverId}
+    </delete>
+
+    <select id="getListByInterfaceIdList" resultMap="ServerSetResultMap">
+        SELECT
+        	a.interface_id, b.server_id, a.value
+        FROM saf_server_set a, saf_server b
+      	WHERE
+            a.interface_id IN
+            <foreach collection="list" item="interfaceId" index="index"  open="(" separator="," close=")">
+            #{interfaceId}
+       	    </foreach>
+       	    AND a.server_uniquekey = b.server_uniquekey
+       	    AND b.server_status IN (0, 1)
+       		AND b.opt_type = 1
+    </select>
+</mapper>

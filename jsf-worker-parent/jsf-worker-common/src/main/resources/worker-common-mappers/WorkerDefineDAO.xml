@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ipd.jsf.worker.common.dao.WorkerDefineDAO">
+    <resultMap type="com.ipd.jsf.worker.common.domain.WorkerInfo"  id="_resultMap">
+        <result column="worker_name" property="workerName" />
+        <result column="worker_type" property="workerType" />
+        <result column="worker_desc" property="workerDesc" />
+        <result column="worker_manager" property="workerManager" />
+        <result column="cron_expression" property="cronExpression" />
+        <result column="worker_parameters" property="workerParameters" />
+        <result column="immediate" property="immediate" javaType="java.lang.Boolean"/>
+        <result column="error_alert" property="errorAlert" javaType="java.lang.Boolean"/>
+        <result column="active" property="active" javaType="java.lang.String"/>
+    </resultMap>
+
+    <sql id="selectSQL">
+		worker_name,worker_type,worker_desc,worker_manager,cron_expression,worker_parameters,immediate,error_alert,active
+	</sql>
+
+    <select id="findWorkerInfos" resultMap="_resultMap">
+        select
+        <include refid="selectSQL" />
+        from
+        saf_worker
+    </select>
+    <select id="findWorkerInfo" resultMap="_resultMap">
+        select
+        <include refid="selectSQL" />
+        from
+        saf_worker
+        where
+        id = #{id}
+    </select>
+    <select id="findWorkerInfoByName" resultMap="_resultMap">
+        select
+        <include refid="selectSQL" />
+        from
+        saf_worker
+        where
+        worker_name = #{name}
+    </select>
+    <select id="findWorkerInfosByWorkerType" resultMap="_resultMap">
+        select
+        <include refid="selectSQL" />
+        from
+        saf_worker
+        where
+        worker_name in
+        <foreach item="item" collection="workerTypes" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </select>
+</mapper>

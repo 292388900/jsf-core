@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ipd.jsf.worker.dao.AppInsDao">
+
+    <resultMap type="AppIns"  id="ResultMap">
+        <id column="jsf_appins_id" property="JsfAppInsId"  jdbcType="INTEGER"/>
+        <result column="app_id" property="appId" />
+        <result column="app_ins_id" property="appInsId" />
+        <result column="ins_key" property="insKey" />
+    </resultMap>
+
+	<select id="getAppInsListNeedSync" resultMap="ResultMap">
+		select 
+			a.jsf_appins_id, a.app_id, a.app_ins_id, hb.ins_key
+		from  saf_app_ins a JOIN saf_ins_hb hb ON a.jsf_appins_id=hb.jsf_appins_id
+		where hb.app_id=0 and a.jsf_appins_id&gt;=#{appInsId} ORDER BY a.jsf_appins_id
+		limit 0,#{size}
+	</select>
+</mapper>

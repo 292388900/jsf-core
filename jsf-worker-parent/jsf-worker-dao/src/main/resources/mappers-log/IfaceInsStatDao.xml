@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ipd.jsf.worker.log.dao.IfaceInsStatDao" >
+  <resultMap id="BaseResultMap" type="com.ipd.jsf.worker.domain.IfaceInsStat" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="interface_name" property="interfaceName" jdbcType="VARCHAR" />
+    <result column="p_ins" property="pinsNum" />
+    <result column="c_ins" property="cinsNum" />
+    <result column="total_ins" property="insTotalNum" />
+    <result column="p_ins_add" property="pinsAdd" jdbcType="BIGINT" />
+    <result column="c_ins_add" property="cinsAdd" jdbcType="BIGINT" />
+    <result column="total_ins_add" property="insTotalAdd" jdbcType="BIGINT" />
+    <result column="p_ips" property="pipNum" jdbcType="BIGINT" />
+    <result column="c_ips" property="cipNum" jdbcType="BIGINT" />
+    <result column="total_ip" property="ipTotalNum" />
+    <result column="p_ip_add" property="pipAdd" jdbcType="BIGINT" />
+    <result column="c_ip_add" property="cipAdd" jdbcType="BIGINT" />
+    <result column="total_ip_add" property="ipTotalAdd" jdbcType="BIGINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="selectSQL" >
+    id, interface_name, week, p_ins, c_ins, total_ins, p_ins_add, c_ins_add,
+     p_ips, c_ips, total_ip, p_ip_add, c_ip_add, create_time,total_ip_add, total_ins_add
+  </sql>
+  
+  <sql id="whereSQL">
+		<where>
+		    <if test="params.interfaceName != null and params.interfaceName != ''">
+		        and interface_name like concat('%',TRIM('${params.interfaceName}'),'%' )
+		    </if>
+        	<if test="params.week != null and params.week != ''">
+        		and week = #{params.week}
+        	</if>
+		</where>
+	</sql>
+    
+   <select id="exists" resultType="int" parameterType="IfaceInsStat">
+        select count(1) from saf_interface_week_stat 
+        <where>
+            <if test="week != null">
+              and week = #{week}
+            </if>
+            <if test="interfaceName != null">
+              and interface_name = #{interfaceName}
+            </if>
+            <if test="createTime != null">
+                and create_time > #{createTime}
+            </if>
+        </where>
+    </select>
+    
+   <select id="getByLastWeek" resultMap="BaseResultMap" parameterType="IfaceInsStat">
+        select   
+        <include refid="selectSQL" />
+        from saf_interface_week_stat
+        <where>
+            <if test="week != null">
+              and week = #{week}
+            </if>
+            <if test="interfaceName != null">
+              and interface_name = #{interfaceName}
+            </if>
+            <if test="createTime != null">
+                and create_time > #{createTime}
+            </if>
+        </where>
+        order by id desc LIMIT 0,1
+    </select>
+
+    <select id="getLastWeek" resultMap="BaseResultMap" parameterType="IfaceInsStat">
+        select
+        <include refid="selectSQL" />
+        from saf_interface_week_stat
+        <where>
+            <if test="week != null">
+                and week = #{week}
+            </if>
+            <if test="interfaceName != null">
+                and interface_name = #{interfaceName}
+            </if>
+            <if test="createTime != null">
+                and create_time > #{createTime}
+            </if>
+        </where>
+        order by id desc LIMIT 0,1
+    </select>
+    
+   <select id="getLastWeekRecord"  resultMap="BaseResultMap" parameterType="java.lang.String">
+        select   
+        <include refid="selectSQL" />
+         	from saf_interface_week_stat 
+         	<where> 
+	        	<if test="interfaceName != null">
+        		and interface_name = #{interfaceName}
+        	   </if>
+        	</where>
+        	order by id desc  LIMIT 0,1
+    </select>
+    
+    <delete id="delete" parameterType="java.lang.Integer">
+		delete from saf_interface_week_stat where id=#{id}
+	</delete>
+    
+  <insert id="insert" parameterType="IfaceInsStat" useGeneratedKeys="true" keyProperty="id" >
+    insert into saf_interface_week_stat (interface_name, week, p_ins, c_ins, total_ins, p_ins_add, c_ins_add,
+     p_ips, c_ips, total_ip, p_ip_add, c_ip_add, create_time,total_ip_add, total_ins_add)
+    values (#{interfaceName,jdbcType=VARCHAR}, #{week}, #{pinsNum},  #{cinsNum}, #{insTotalNum},#{pinsAdd},
+      #{cinsAdd},#{pipNum},#{cipNum},#{ipTotalNum},#{pipAdd},#{cipAdd}, #{createTime}, #{ipTotalAdd}, #{insTotalAdd})
+  </insert>
+  
+</mapper>

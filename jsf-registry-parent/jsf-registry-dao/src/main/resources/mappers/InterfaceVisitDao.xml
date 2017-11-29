@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.registry.dao.InterfaceVisitDao">
+    <!-- 业务表 -->
+    <resultMap type="com.ipd.jsf.registry.domain.InterfaceVisit"  id="ResultMap">
+        <result column="interface_id" property="interfaceId"/>
+        <result column="visitor_name" property="visitorName" />
+        <result column="interface_name" property="interfaceName" />
+    </resultMap>
+
+    <select id="getList" resultMap="ResultMap">
+    <![CDATA[
+        SELECT
+        	a.interface_id, a.visitor_name, a.interface_name
+        FROM saf_iface_visit a
+      	WHERE
+      	    isvalid = 1
+    ]]>
+    </select>
+
+    <select id="getListCount" resultType="java.lang.Integer" >
+        <![CDATA[
+        SELECT
+            COUNT(id)
+        FROM saf_iface_visit
+        WHERE
+      	    isvalid = 1
+        ]]>
+    </select>
+    
+</mapper>

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.sqllite.test.dao.ServerDao">
+    <resultMap type="com.ipd.jsf.sqllite.test.domain.Server"  id="ServerResultMap">
+        <id column="server_id" property="id"  jdbcType="INTEGER"/>
+        <result column="server_uniquekey" property="uniqKey" />
+        <result column="interface_id" property="interfaceId" />
+        <result column="interface_name" property="interfaceName" />
+        <result column="server_ip" property="ip" />
+        <result column="server_port" property="port" />
+        <result column="server_pid" property="pid" />
+        <result column="server_alias" property="alias" />
+        <result column="server_status" property="status" />
+        <result column="server_room" property="room" />
+        <result column="server_timeout" property="timeout" />
+        <result column="server_weight" property="weight" />
+        <result column="server_apppath" property="appPath" />
+        <result column="protocol" property="protocol"/>
+        <result column="context_path" property="contextPath" />
+        <result column="saf_version" property="safVer" />
+        <result column="is_random" property="isRandom" />
+        <result column="src_type" property="srcType" jdbcType="INTEGER" />
+		<result column="attr_url" property="attrUrl" />
+		<result column="safurl_desc" property="urlDesc" />
+        <result column="start_time" property="startTime" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <insert id="create">
+		<![CDATA[
+		CREATE TABLE IF NOT EXISTS `saf_server` (
+		  `server_uniquekey` varchar(255) PRIMARY KEY NOT NULL, -- 'ip;port;alias(group:version);protocol;serviceInfoId , 将这5个字段作为provider的唯一判断和索引，在此不做唯一约束，通过程序进行判断'
+		  `interface_id` INT NOT NULL,
+		  `interface_name` VARCHAR(255) NOT NULL,
+		  `server_alias` VARCHAR(64) NOT NULL, -- '默认alias,group:version'
+		  `server_ip` VARCHAR(16) NOT NULL, -- 'server的IP地址'
+		  `server_port` INT NOT NULL, -- 'server的端口号'
+		  `server_pid` INT NOT NULL, -- 'server的PID'
+		  `server_status` TINYINT NOT NULL,
+		  `server_room` TINYINT NOT NULL,
+		  `server_timeout` INT NOT NULL,
+		  `server_weight` INT NOT NULL,
+		  `server_apppath` varchar(255) NOT NULL,
+		  `protocol` TINYINT NOT NULL,
+		  `context_path` varchar(255) NOT NULL,
+		  `saf_version` INT NOT NULL,
+		  `is_random` TINYINT NOT NULL,
+		  `src_type` TINYINT NOT NULL,  -- 'data type: 1-registry, 2-manual, 3-zookeeper 用于数据同步'
+		  `ins_key` VARCHAR(32) NOT NULL,
+		  `attr_url` VARCHAR(255) NOT NULL, -- '保存safurl中的attr参数，过滤掉一些在表中已经存在的参数',
+		  `safurl_desc` TEXT NOT NULL,
+		  `start_time` BIGINT NOT NULL,
+		  `create_time` DATETIME NOT NULL,
+		  `update_time` DATETIME NOT NULL,
+		  `syn_flag` TINYINT NOT NULL    -- '是否同步, 1-已经同步，2-未同步'
+		)
+		]]>
+    </insert>
+
+    <insert id="insert" parameterType="com.ipd.saf.sqllite.test.domain.Server" >
+        <![CDATA[
+        INSERT INTO saf_server (server_uniquekey, interface_id, interface_name, server_ip, server_port, server_pid, server_alias, server_status, server_room, server_timeout,
+            server_weight, server_apppath, protocol, context_path, saf_version, is_random, src_type, ins_key, attr_url, safurl_desc, start_time, create_time, update_time, syn_flag)
+        VALUES (
+        	#{uniqKey},
+            #{interfaceId},
+            #{interfaceName},
+            #{ip},
+            #{port},
+            #{pid},
+            #{alias},
+            #{status},
+            #{room},
+            #{timeout},
+            #{weight},
+            #{appPath},
+            #{protocol},
+            #{contextPath},
+            #{safVer},
+            #{isRandom},
+            #{srcType},
+            '',
+            #{attrUrl},
+            #{urlDesc},
+            #{startTime},
+            #{createTime},
+            #{updateTime},
+            0
+            )
+        ]]>
+    </insert>
+
+    <update id="update" parameterType="com.ipd.saf.sqllite.test.domain.Server">
+        UPDATE saf_server
+        SET 
+            server_pid = #{pid},
+		    server_status = (CASE WHEN server_status = 2 OR server_status = 3 THEN 2 
+						          WHEN server_status = 0 THEN 1
+						          ELSE 1
+						          END), 
+            server_timeout = #{timeout},
+            server_weight = #{weight},
+            server_apppath = #{appPath},
+            context_path = #{contextPath},
+            is_random = #{isRandom},
+            <if test="attrUrl != null and '' != attrUrl and attrUrl != '{}'">
+            attr_url = #{attrUrl},
+            </if>
+            <if test="urlDesc != null and '' != urlDesc">
+            safurl_desc = #{urlDesc},
+            </if>
+            start_time = #{startTime},
+            update_time = #{updateTime},
+            syn_flag = 0
+        WHERE
+        <![CDATA[
+            server_uniquekey = #{uniqKey} AND update_time BETWEEN '2000-01-01 00:00:00' AND #{updateTime}
+        ]]>
+    </update>
+
+    <update id="updateStatus">
+    	<![CDATA[
+        UPDATE saf_server
+        SET 
+            server_status = (CASE WHEN server_status = 2 OR server_status = 3 THEN 3 
+						          WHEN server_status = 1 THEN 0
+						          ELSE 0
+						          END),
+            update_time = #{updateTime},
+            syn_flag = 0
+        WHERE
+            server_uniquekey = #{uniqKey}
+            AND update_time BETWEEN '2000-01-01 00:00:00' AND #{updateTime}
+        ]]>
+    </update>
+
+    <update id="updateSynFlag">
+    	<![CDATA[
+        UPDATE saf_server
+        SET 
+            server_status = (CASE WHEN server_status = 2 OR server_status = 3 THEN 3 
+						          WHEN server_status = 1 THEN 0
+						          ELSE 0
+						          END),
+            update_time = #{updateTime},
+            syn_flag = 0
+        WHERE
+            server_uniquekey IN
+        ]]>
+		<foreach collection="list" item="uniqKey" index="index"  open="(" separator="," close=")">
+			#{uniqKey}
+		</foreach>
+    </update>
+
+    <select id="getServers" resultMap="ServerResultMap">
+        SELECT
+        	server_uniquekey, interface_id, interface_name, server_ip, server_port, server_pid, server_alias, server_status, server_room, server_timeout,
+            server_weight, server_apppath, protocol, context_path, saf_version, is_random, src_type, attr_url, safurl_desc, start_time, create_time, update_time
+        FROM saf_server a
+      	WHERE
+            syn_flag = 0
+    </select>
+</mapper>

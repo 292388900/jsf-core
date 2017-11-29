@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.registry.dao.ServerDao">
+    <resultMap type="Server"  id="ServerResultMap">
+        <id column="server_id" property="id"  jdbcType="INTEGER"/>
+        <result column="server_uniquekey" property="uniqKey" />
+        <result column="interface_id" property="interfaceId" />
+        <result column="interface_name" property="interfaceName" />
+        <result column="server_ip" property="ip" />
+        <result column="server_port" property="port" />
+        <result column="server_pid" property="pid" />
+        <result column="server_alias" property="alias" />
+        <result column="server_status" property="status" />
+        <result column="server_room" property="room" />
+        <result column="server_timeout" property="timeout" />
+        <result column="server_weight" property="weight" />
+        <result column="server_apppath" property="appPath" />
+        <result column="protocol" property="protocol"/>
+        <result column="context_path" property="contextPath" />
+        <result column="saf_version" property="safVer" />
+        <result column="is_random" property="isRandom" />
+        <result column="src_type" property="srcType" jdbcType="INTEGER" />
+		<result column="attr_url" property="attrUrl" />
+		<result column="safurl_desc" property="urlDesc" />
+        <result column="start_time" property="startTime" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <resultMap type="Server"  id="InterfaceServerCacheResultMap">
+    	<id column="server_id" property="id"  jdbcType="INTEGER"/>
+    	<result column="server_uniquekey" property="uniqKey" />
+        <result column="server_ip" property="ip" />
+        <result column="server_port" property="port" />
+        <result column="server_pid" property="pid" />
+        <result column="server_alias" property="alias" />
+        <result column="server_weight" property="weight" />
+        <result column="protocol" property="protocol"/>
+        <result column="saf_version" property="safVer"/>
+        <result column="interface_id" property="interfaceId" />
+        <result column="server_room" property="room" />
+        <result column="attr_url" property="attrUrl" />
+    </resultMap>
+
+    <insert id="create" parameterType="Server" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+        INSERT INTO saf_server (server_uniquekey, interface_id, interface_name, server_ip, server_port, server_pid, server_alias, server_status, server_room, server_timeout,
+            server_weight, server_apppath, protocol, context_path, saf_version, is_random, src_type, ins_key, attr_url, safurl_desc, start_time, create_time, update_time, opt_type)
+        VALUES (
+        	#{uniqKey},
+            #{interfaceId},
+            #{interfaceName},
+            #{ip},
+            #{port},
+            #{pid},
+            #{alias},
+            #{status},
+            #{room},
+            #{timeout},
+            #{weight},
+            #{appPath},
+            #{protocol},
+            #{contextPath},
+            #{safVer},
+            #{isRandom},
+            #{srcType},
+            #{insKey},
+            #{attrUrl},
+            #{urlDesc},
+            #{startTime},
+            #{createTime},
+            #{updateTime},
+            #{optType}
+            )
+        ]]>
+    </insert>
+
+    <update id="update" parameterType="Server">
+        UPDATE saf_server
+        SET 
+            server_pid = #{pid},
+            server_status = 1,
+            src_type = #{srcType},
+			<if test="optType != null and optType == 0">
+			opt_type = #{optType},
+			</if>
+            server_room = #{room},
+            server_timeout = #{timeout},
+            server_weight = #{weight},
+            server_apppath = #{appPath},
+            context_path = #{contextPath},
+            is_random = #{isRandom},
+            ins_key = #{insKey},
+            <if test="attrUrl != null and '' != attrUrl and attrUrl != '{}'">
+            attr_url = #{attrUrl},
+            </if>
+            <if test="urlDesc != null and '' != urlDesc">
+            safurl_desc = #{urlDesc},
+            </if>
+            start_time = #{startTime},
+            del_time = 0,
+            update_time = #{updateTime}
+        WHERE
+        <![CDATA[
+            server_uniquekey = #{uniqKey}
+        ]]>
+    </update>
+
+    <update id="updateToUnreg">
+        UPDATE saf_server
+        SET server_status = 4,
+			del_time = #{delTime}
+      	WHERE
+            server_uniquekey = #{uniqKey} AND opt_type = 1
+            AND server_pid = #{pid} AND start_time = #{startTime} AND src_type = 1
+    </update>
+
+    <select id="getServersByInterfaceIdList" resultMap="InterfaceServerCacheResultMap">
+        SELECT
+        	a.server_id, a.server_ip, a.server_port, a.server_pid, a.server_alias, a.server_weight, a.protocol, a.interface_id, 
+        	a.saf_version, a.server_room, a.attr_url
+        FROM saf_server a
+      	WHERE
+            a.interface_id IN
+        <foreach collection="list" item="interfaceId" index="index"  open="(" separator="," close=")">
+            #{interfaceId}
+       	</foreach>
+      	    AND a.server_status IN (0, 1) AND a.opt_type = 1
+    </select>
+
+    <select id="getServerByUniqkey" resultMap="ServerResultMap">
+        SELECT a.server_pid, a.server_status, a.server_room, a.src_type
+        FROM saf_server a
+      	WHERE server_uniquekey = #{uniqKey}
+	</select>
+
+    <!-- sql不符合预期，有bug,暂时注释，改成下面的sql
+    <select id="getServersByIfaceIdAliasList" resultMap="InterfaceServerCacheResultMap">
+        SELECT
+        	a.server_id, a.server_uniquekey, a.server_ip, a.server_port, a.server_pid, a.server_alias, a.server_weight, a.protocol, a.interface_id, 
+        	a.saf_version, a.server_room, a.attr_url
+        FROM saf_server a
+      	WHERE
+            a.interface_id IN
+	        <foreach collection="list" item="item" index="index"  open="(" separator="," close=")">
+	            #{item.interfaceId}
+	       	</foreach>
+	       	AND a.server_alias IN
+	        <foreach collection="list" item="item" index="index"  open="(" separator="," close=")">
+	            #{item.alias}
+	       	</foreach>
+      	    AND a.server_status IN (0, 1) AND a.opt_type = 1
+    </select> -->
+    <select id="getServersByIfaceIdAliasList" resultMap="InterfaceServerCacheResultMap">
+        SELECT
+        	a.server_id, a.server_uniquekey, a.server_ip, a.server_port, a.server_pid, a.server_alias, a.server_weight, a.protocol, a.interface_id, 
+        	a.saf_version, a.server_room, a.attr_url
+        FROM saf_server a
+      	WHERE
+	        <foreach collection="list" item="item" index="index"  open="((" separator=") OR (" close="))">
+	            a.interface_id = #{item.interfaceId} AND a.server_alias = #{item.alias}
+	       	</foreach>
+      	    AND a.server_status IN (0, 1) AND a.opt_type = 1
+    </select>
+</mapper>

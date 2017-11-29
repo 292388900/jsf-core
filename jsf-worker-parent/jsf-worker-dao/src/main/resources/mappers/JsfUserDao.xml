@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ipd.jsf.worker.dao.JsfUserDao">
+	<sql id="selectSQL">
+		id, `pin`, `nick`,realName, `mail`, tel 
+	</sql>
+	
+	<select id="getUserByPin" resultType="com.ipd.jsf.worker.domain.User">
+		select 
+		<include refid="selectSQL"/> 
+		from 
+		saf_user 
+		where `pin`=#{pin}
+	</select>
+	
+	<select id="getUserByPins" resultType="com.ipd.jsf.worker.domain.User">
+		select 
+		<include refid="selectSQL"/> 
+		from 
+		saf_user 
+		where `pin` in 
+		<foreach item="item" collection="pins" open="(" separator="," close=")">
+            #{item}
+        </foreach> 
+	</select>
+	
+	<select id="getByMail" resultType="com.ipd.jsf.worker.domain.User">
+		select 
+		<include refid="selectSQL"/> 
+		from 
+		saf_user 
+		where `mail` = #{mail}
+	</select>
+
+
+	<update id="update">
+		update
+		saf_user
+		<set>
+			<if test="realName != null and realName != ''">realName=#{realName},</if>
+			mail=#{mail},
+			tel=#{tel}
+		</set>
+		where
+		pin = #{pin}
+	</update>
+
+	<select id="getAllUser" resultType="com.ipd.jsf.worker.domain.User">
+		select
+		<include refid="selectSQL"/>
+		from
+		saf_user
+	</select>
+
+</mapper>

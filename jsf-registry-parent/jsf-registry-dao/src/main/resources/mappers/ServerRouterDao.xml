@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.registry.dao.ServerRouterDao">
+    <resultMap type="ServerRouter"  id="ServerRouterResultMap">
+        <result column="interface_id" property="interfaceId" />
+        <result column="interface_name" property="interfaceName" />
+        <result column="type" property="type" />
+        <result column="value" property="value" />
+    </resultMap>
+
+    <select id="getListByInterfaceIdList" resultMap="ServerRouterResultMap">
+        SELECT
+        	a.interface_id, a.interface_name, a.type, a.value
+        FROM saf_iface_router a
+      	WHERE
+            a.interface_id IN
+        <foreach collection="list" item="interfaceId" index="index"  open="(" separator="," close=")">
+            #{interfaceId}
+       	</foreach>
+        AND a.type=#{type} 
+        AND a.valid=1
+    </select>
+</mapper>

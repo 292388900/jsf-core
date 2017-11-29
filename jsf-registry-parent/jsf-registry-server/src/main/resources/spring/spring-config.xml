@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
+       default-lazy-init="false" default-autowire="byName">
+
+	<!--全局配置地址 -->
+	<bean id="globalConfiguration" class="org.springframework.beans.factory.config.PropertiesFactoryBean"> 
+		<property name="locations">
+			<list>
+				<!-- 标准配置 -->
+				<value>classpath*:/global.properties</value>
+				<value>classpath*:/inst/${saf_instance}.properties</value><!-- saf_instance在实例启动脚本中设置,在RegistryStartup.java中进行非空判断 -->
+				<value>classpath*:/important.properties</value>
+			</list>
+		</property>
+    </bean>
+
+	<import resource="spring-database.xml" />
+
+	<!-- 放在saf服务下面，有加载顺序的要求 -->
+	<context:component-scan base-package="com.ipd.jsf.registry.local.manager.impl,com.ipd.jsf.registry.service.impl,com.ipd.jsf.registry.service.helper,com.ipd.jsf.service.impl,com.ipd.jsf.registry.manager.impl,com.ipd.jsf.registry.berkeley.dao,com.ipd.jsf.registry.cache,com.ipd.jsf.version.common.service" />
+	<aop:aspectj-autoproxy expose-proxy="true" />
+	<context:annotation-config />
+
+	<bean id="berkeleyDb" class="com.ipd.jsf.registry.berkeley.dao.BerkeleyDb" destroy-method="close">
+		<constructor-arg value="#{globalConfiguration['localdb.path']}"></constructor-arg>
+	</bean>
+
+	<bean id="registryServer" class="com.ipd.jsf.registry.server.RegistryServer">
+		<property name="port" value="#{ globalConfiguration['registry.port'] }" />
+		<property name="hbInterval" value="#{ globalConfiguration['registry.hbInterval'] }" />
+		<property name="threads" value="#{ globalConfiguration['registry.threads'] }" />
+		<property name="concurrents" value="#{ globalConfiguration['registry.concurrents'] }" />
+		<property name="queues" value="#{ globalConfiguration['registry.queues'] }" />
+		<property name="threadPool" value="#{ globalConfiguration['registry.threadPool'] }" />
+		<property name="alarmUmpJvmKey" value="#{ globalConfiguration['ump.jvm.key'] }" />
+		<property name="alarmUmpAliveKey" value="#{ globalConfiguration['ump.sys.alive.key'] }" />
+		<property name="httpToken" value="#{ globalConfiguration['registry.http.token'] }" />
+		<property name="conThreshold" value="#{ globalConfiguration['registry.conThreshold'] }" />
+		<property name="conDelta" value="#{ globalConfiguration['registry.conDelta'] }" />
+	</bean>
+
+	<bean id="registryCacheLoader" class="com.ipd.jsf.registry.schedule.RegistryCacheLoader" init-method="start">
+		<property name="refreshCacheInterval" value="60" />
+		<property name="registryServer" ref="registryServer" />
+	</bean>
+
+	<bean id="heartbeatSchedule" class="com.ipd.jsf.registry.schedule.HeartbeatSchedule" init-method="start" />
+
+	<bean id="registerIpLimitSchedule" class="com.ipd.jsf.registry.schedule.RegisterIpLimitSchedule" init-method="start">
+	    <property name="interval" value="1" />
+	    <property name="checkflag" value="true" />
+	    <property name="visitLimit" value="#{ globalConfiguration['ip.visit.limit'] }" />
+	    <property name="minuteLimit" value="#{ globalConfiguration['ip.visit.limit.time'] }" />
+	</bean>
+
+	<bean id="clientSyncSchedule" class="com.ipd.jsf.registry.schedule.ClientSyncSchedule" init-method="start">
+	    <property name="interval" value="10" />
+	    <property name="totalCountLimit" value="10000" />
+	    <property name="umpBerkeleyDBKey" value="#{ globalConfiguration['ump.berkeleydb.alive.key'] }" />
+	</bean>
+
+	<bean id="serverSyncSchedule" class="com.ipd.jsf.registry.schedule.ServerSyncSchedule" init-method="start">
+	    <property name="interval" value="10" />
+	    <property name="totalCountLimit" value="10000" />
+	    <property name="umpBerkeleyDBKey" value="#{ globalConfiguration['ump.berkeleydb.alive.key'] }" />
+	</bean>
+
+	<bean id="instanceSchedule" class="com.ipd.jsf.registry.schedule.InstanceSchedule" init-method="start">
+		<property name="interval" value="10" />
+		<property name="totalCountLimit" value="10000" />
+		<property name="umpBerkeleyDBKey" value="#{ globalConfiguration['ump.berkeleydb.alive.key'] }" />
+	</bean>
+
+	<bean id="checkDBSchedule" class="com.ipd.jsf.registry.schedule.CheckDBSchedule" init-method="start">
+		<property name="interval" value="30" />
+		<property name="umpDBKey" value="#{ globalConfiguration['ump.db.alive.key'] }" />
+	</bean>
+
+	<bean id="recorderSchedule" class="com.ipd.jsf.registry.schedule.RecorderSchedule" init-method="start">
+		<property name="interval" value="120" />
+	</bean>
+</beans>

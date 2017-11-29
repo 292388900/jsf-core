@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ipd.jsf.worker.dao.MonitorSettingDao">
+	
+	<select id="statAll" resultType="com.ipd.jsf.worker.domain.MonitorSetting">
+	
+		select sa.interface_id as interfaceId, sa.interface_name as interfaceName, sa.server_alias as alias, sa.pNum, sc.cNum from
+			(
+				select distinct a.interface_id , a.interface_name , a.server_alias, SUM(CASE a.server_status WHEN 1 THEN 1 ELSE 0 END) AS pNum
+				from  saf_server a 
+				where a.src_type!=3 and a.interface_id IN 
+				(
+					SELECT DISTINCT i.interface_id
+					FROM saf_interface_property i
+					WHERE i.param_type=1 
+				) GROUP BY a.server_alias, a.interface_name) sa
+		left join
+			(
+				select distinct c.interface_id , c.interface_name , c.client_alias, SUM(CASE c.client_status WHEN 1 THEN 1 ELSE 0 END) AS cNum
+				from  saf_client c 
+				where c.src_type!=3 and c.interface_id IN 
+				(
+					SELECT DISTINCT i.interface_id
+					FROM saf_interface_property i
+					WHERE i.param_type=1 
+				) GROUP BY c.client_alias, c.interface_name
+			) sc on sa.interface_id=sc.interface_id and sa.server_alias=sc.client_alias
+		group by interfaceName
+	</select>
+	
+	<select id="getMonitors" resultType="com.ipd.jsf.worker.domain.InterfaceProperty">
+        select interface_name as interfaceName, param_key as paramKey , param_value as paramValue
+        from 
+        saf_interface_property 
+        where interface_name=#{iface} and param_type=1
+	</select>
+</mapper>

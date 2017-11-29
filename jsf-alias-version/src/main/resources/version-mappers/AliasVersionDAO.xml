@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ipd.jsf.version.common.dao.AliasVersionDAO">
+
+<!--    <resultMap type="IfaceAlias"  id="IfaceAliasVersionResultMap">
+        <id column="interface_id" property="interfaceId"  jdbcType="INTEGER"/>
+        <result column="alias" property="alias" />
+        <result column="update_timestamp" property="dataVersion" />
+    </resultMap>-->
+
+    <insert id="batchCreate">
+        <![CDATA[
+        INSERT INTO jsf_ifacealias_version (interface_id, alias, update_timestamp, update_time) 
+        VALUES
+        ]]>
+        <foreach item="item" index="index" collection="aliasList" open="(" close=")" separator="),(">
+        	#{item.interfaceId},
+            #{item.alias},
+        	#{version},
+        	#{time}
+		</foreach>
+		ON DUPLICATE KEY UPDATE update_timestamp = #{version}, update_time = #{time}
+    </insert>
+
+    <update id="updateConfVersion">
+        <![CDATA[
+        UPDATE saf_iface_version SET cfg_update_time = #{version}
+        WHERE interface_id = #{interfaceId}
+        ]]>
+    </update>
+
+    <!--获取一个接口下的所有alias对应的版本号-->
+    <select id="getAliasVersionByIfaceId" resultType="com.ipd.jsf.version.common.domain.IfaceAliasVersion">
+        <![CDATA[
+        SELECT
+        	interface_id as interfaceId, alias as alias, update_time as updateTime
+        FROM jsf_ifacealias_version
+        WHERE
+            interface_id = #{interfaceId}
+        ]]>
+    </select>
+
+</mapper>

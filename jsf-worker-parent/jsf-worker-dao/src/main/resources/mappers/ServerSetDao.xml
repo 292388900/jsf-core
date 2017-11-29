@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.worker.dao.ServerSetDao">
+    <delete id="deleteServerSetByServerIds">
+        DELETE FROM saf_server_set 
+      	WHERE
+            server_id IN
+        <foreach collection="list" item="item" index="index"  open="(" separator="," close=")">
+            #{item.id}
+       	</foreach>
+    </delete>
+</mapper>

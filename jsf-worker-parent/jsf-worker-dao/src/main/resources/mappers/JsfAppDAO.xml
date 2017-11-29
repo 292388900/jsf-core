@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ipd.jsf.worker.dao.JsfAppDAO">
+
+	<resultMap type="JsfApp"  id="_resultMap">
+        <id column="jsf_app_id" property="id"  jdbcType="INTEGER"/>
+        <result column="app_id" property="appId" />
+        <result column="app_name" property="appName" />
+        <result column="src_type" property="srcType" />
+        <result column="creator" property="creator" />
+        <result column="create_time" property="createTime" />
+        <result column="app_type" property="appType" />
+        <result column="dept_name" property="deptName" />
+        <result column="developer" property="developer" />
+        <result column="developer_leader" property="developerLeader" />
+        <result column="domain" property="domain" />
+        <result column="app_developgroup_name" property="appDevelopGroupName" />
+        <result column="first_branch" property="first_branch" />
+        <result column="second_branch" property="second_branch" />
+        <result column="jone_app_level" property="joneAppLevel" />
+        <result column="leader" property="leader" />
+        <result column="leader_name" property="leaderName" />
+        <result column="level" property="level" />
+        <result column="level_name" property="levelName" />
+        <result column="app_token" property="token" />
+    </resultMap>
+
+	<sql id="selectSQL">
+		jsf_app_id, `app_id`, `app_name`,  src_type, creator, create_time
+	</sql>
+	
+	<sql id="whereSQL"> 
+		<where>
+			<if test="params.appName != null and params.appName != ''">
+				and lower(app_name) like lower(concat('%', trim(#{params.appName}),'%' ))
+			</if>
+			<if test="params.type != null and params.type != ''">
+				and src_type=#{params.type}
+			</if>
+		</where>
+	</sql>
+	
+	<insert id="insert" parameterType="JsfApp" useGeneratedKeys="true" keyProperty="id">
+		insert into 
+		saf_app 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			app_id, 
+			app_name, 
+			src_type,
+			creator, 
+			create_time
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{appId},
+			#{appName},
+			#{srcType},
+			#{creator},
+			#{createTime}
+		</trim>
+	</insert>
+	
+	
+	<insert id="batchInsert" useGeneratedKeys="true" keyColumn="id">
+		insert into 
+		saf_app 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			app_id, 
+			app_name, 
+			src_type,
+			creator, 
+			create_time
+		</trim>
+		values
+		<foreach collection="ifaces" item="item" index="index" separator="," >
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+			#{item.appId},
+			#{item.appName},
+			#{item.srcType},
+			#{item.creator},
+			#{item.createTime}
+		</trim>
+        </foreach>  
+	</insert>
+	
+	<select id="getAllApp" resultMap="_resultMap">
+		select <include refid="selectSQL"/>  from saf_app group by app_id
+	</select>
+	
+	<select id="list" resultMap="_resultMap">
+		select 
+		<include refid="selectSQL"/> 
+		from 
+		saf_app 
+        <include refid="whereSQL" /> 
+        order by jsf_app_id desc 
+		limit #{offset}, #{size}
+	</select>
+	
+	<select id="count" resultType="int">
+		select count(1) from 
+		saf_app 
+        <include refid="whereSQL" /> 
+	</select>
+	
+	<select id="isExists" resultType="int" parameterType="JsfApp">
+		select count(1) from saf_app where app_id=#{appId} 
+	</select>
+	
+	<update id="update" parameterType="JsfApp">
+		update
+		saf_app
+		<set>
+			<if test="appId != null and appId != ''">`app_id` = #{appId},</if>
+			<if test="appName != null and appName != ''">`app_name` = #{appName},</if>
+			<if test="appType != null and appType != ''">`app_type` = #{appType},</if>
+			<if test="deptName != null and deptName != ''">`dept_name` = #{deptName},</if>
+			<if test="developer != null and developer != ''">`developer` = #{developer},</if>
+			<if test="developerLeader != null and developerLeader != ''">`developer_leader` = #{developerLeader},</if>
+			<if test="domain != null and domain != ''">`domain` = #{domain},</if>
+			<if test="appDevelopGroupName != null and appDevelopGroupName != ''">`app_developgroup_name` = #{appDevelopGroupName},</if>
+			<if test="first_branch != null and first_branch != ''">`first_branch` = #{first_branch},</if>
+			<if test="second_branch != null and second_branch != ''">`second_branch` = #{second_branch},</if>
+			<if test="joneAppLevel != null and joneAppLevel != ''">`jone_app_level` = #{joneAppLevel},</if>
+			<if test="leader != null and leader != ''">`leader` = #{leader},</if>
+			<if test="leaderName != null and leaderName != ''">`leader_name` = #{leaderName},</if>
+			<if test="level != null and level != ''">`level` = #{level},</if>
+			<if test="levelName != null and levelName != ''">`level_name` = #{levelName},</if>
+		</set>
+		where
+		jsf_app_id = #{id}
+	</update>
+	
+	<delete id="batchDelete">
+		delete from   
+		saf_app 
+		where 
+		jsf_app_id in
+		<foreach item="item" collection="params" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+	</delete>
+	
+	<select id="getByAppid" resultMap="_resultMap" parameterType="int">
+		select * from saf_app where app_id=#{appId}
+	</select>
+	
+	<select id="getAppListWithToken" resultMap="_resultMap">
+		SELECT jsf_app_id, `app_id`, app_token
+		FROM saf_app WHERE app_token IS NOT NULL AND app_token != ''
+	</select>
+	
+</mapper>

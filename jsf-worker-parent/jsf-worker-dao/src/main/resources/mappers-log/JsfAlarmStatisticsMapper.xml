@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ipd.jsf.worker.log.dao.JsfAlarmStatisticsDao" >
+
+  <!--
+  <sql id="Base_Column_List" >
+    alarm_key ,count(alarm_key)
+  </sql>
+
+    <select id="selectOneDay" resultType="JsfAlarmStatisticsItem" >
+      select alarm_type as alarmType,count(alarm_type) as count
+      from saf_alarm_history
+      where alarm_time >= #{date} and #{theNextDay} > alarm_time and is_alarmed = 1 group by alarm_type
+    </select>
+    -->
+
+  <!-- 2015-9-7  按照类型，接口，ip分组  -->
+  <select id="selectOneDayStatistics" resultType="com.ipd.jsf.worker.domain.JsfAlarmStatistics" >
+    select alarm_type as alarmType,interface_name as alarmInterface, alarm_ip as alarmIp, count(alarm_type) as alarmCount
+    from saf_alarm_history
+    where alarm_time >= #{date} and #{theNextDay} > alarm_time and is_alarmed = 1
+    group by alarm_type,interface_name, alarm_ip
+  </select>
+
+
+  <insert id="insert" parameterType="com.ipd.jsf.worker.domain.JsfAlarmStatistics" useGeneratedKeys="true" keyProperty="id" >
+    insert into saf_alarm_statistics (alarm_date,alarm_type,alarm_ip,alarm_interface,alarm_count)
+    values (#{alarmDate},#{alarmType}, #{alarmIp},#{alarmInterface}, #{alarmCount})
+  </insert>
+
+
+  <!--
+  <insert id="batchInsert" parameterType="java.util.List">
+    <![CDATA[
+      insert into saf_alarm_statistics (alarm_date,alarm_type,alarm_count)
+      values
+      ]]>
+    <foreach item="item" index="index" collection="list" open="(" close=")" separator="),(">
+      #{item.alarmDate},
+      #{item.alarmType},
+      #{item.alarmCount}
+    </foreach>
+  </insert>
+  -->
+
+  <insert id="batchInsert" parameterType="java.util.List">
+    <![CDATA[
+      insert into saf_alarm_statistics (alarm_date,alarm_type,alarm_ip,alarm_interface,alarm_count)
+      values
+      ]]>
+    <foreach item="item" index="index" collection="list" open="(" close=")" separator="),(">
+      #{item.alarmDate},
+      #{item.alarmType},
+      #{item.alarmIp},
+      #{item.alarmInterface},
+      #{item.alarmCount}
+    </foreach>
+  </insert>
+
+  <select id="isExists" resultType="int">
+    select
+    count(*)
+    from
+    saf_alarm_statistics
+    where  alarm_date <![CDATA[ = ]]> #{date}
+  </select>
+
+  <!--删除某一天的记录-->
+  <delete id="deleteOneDay">
+    delete from saf_alarm_statistics where  alarm_date <![CDATA[ = ]]> #{date}
+  </delete>
+
+</mapper>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ipd.jsf.worker.dao.JsfIfaceServerDAO">
+    <resultMap type="com.ipd.jsf.worker.domain.JsfIfaceServer"  id="_resultMap">
+    	<result column="ownerUser" property="ownerUser" />
+        <result column="interfaceName" property="interfaceName" />
+        <result column="serverIp" property="serverIp" />
+        <result column="serverPort" property="serverPort" />
+    </resultMap>
+    
+    <select id="getServers" resultMap="_resultMap">
+    	SELECT i.interfaceName as interfaceName, r.pin as ownerUser, s.server_ip as serverIp, s.server_port as serverPort
+		FROM saf_interface i, saf_server s , saf_user_resource r
+		WHERE i.id = s.interface_id and i.id = r.resId and r.resType = 2 and
+			i.interfaceName = #{interfaceName}  and 
+			s.server_status =1 and s.opt_type = 1 and src_type in (1, 2)
+    </select>
+    <select id="getInterfaces" resultMap="_resultMap">
+    	SELECT i.interfaceName as interfaceName, r.pin as ownerUser, s.server_ip as serverIp, s.server_port as serverPort
+		FROM saf_interface i, saf_server s , saf_user_resource r
+		WHERE i.id = s.interface_id and i.id = r.resId and r.resType = 2 and
+			r.pin = #{erp}  and 
+			s.server_status =1 and s.opt_type = 1 and src_type in (1, 2)
+    </select>
+
+    <select id="getOneServer" resultMap="_resultMap">
+        SELECT i.interfaceName as interfaceName, s.server_ip as serverIp, s.server_port as serverPort
+        FROM saf_interface i, saf_server s
+        WHERE i.id = s.interface_id and i.interfaceName = #{interfaceName} 
+        and s.server_status =1 and s.opt_type = 1 and s.src_type = 1 limit 0,2
+    </select>
+
+    
+</mapper>

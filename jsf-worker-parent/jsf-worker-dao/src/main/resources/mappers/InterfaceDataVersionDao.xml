@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.worker.dao.InterfaceDataVersionDao">
+    <insert id="create">
+    	<![CDATA[
+        INSERT INTO saf_iface_version (interface_id, update_time, cfg_update_time)
+        VALUES (
+        	#{interfaceId},
+        	#{updateTime},
+        	CURRENT_TIMESTAMP()
+            )
+        ON DUPLICATE KEY UPDATE
+            update_time = #{updateTime}
+		]]>
+    </insert>
+
+    <update id="update">
+    	<![CDATA[
+        UPDATE saf_iface_version
+        SET update_time = #{updateTime}
+        WHERE
+            interface_id IN
+		]]>
+            <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item}
+			</foreach>
+    </update>
+
+	<select id="getListByTime" resultType="java.lang.Integer">
+        SELECT DISTINCT
+        	interface_id
+        FROM saf_iface_version
+        WHERE
+            update_time > #{updateTime}
+    </select>
+
+
+
+    <insert id="createOrUpdateCfgTime">
+        <![CDATA[
+        INSERT INTO saf_iface_version (interface_id, update_time, cfg_update_time)
+        VALUES (
+        	#{interfaceId},
+        	CURRENT_TIMESTAMP(),
+        	CURRENT_TIMESTAMP()
+            )
+        ON DUPLICATE KEY UPDATE
+            cfg_update_time = CURRENT_TIMESTAMP()
+		]]>
+    </insert>
+
+
+</mapper>

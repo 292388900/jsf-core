@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.worker.dao.RegHbDao">
+
+    <resultMap type="RegHealthInfo" id="RegHealthInfoResultMap">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="reg_addr" property="regAddr"/>
+        <result column="hb_count" property="hbCount"/>
+    </resultMap>
+
+    <select id="getUncheckList" resultType="java.lang.String">
+        <![CDATA[
+
+        SELECT reg_ip 
+        FROM saf_reg_hb 
+        WHERE hb_time < #{time} OR valid_flag = 0
+
+        ]]>
+    </select>
+
+    <select id="getUncheckRegList" resultMap="RegHealthInfoResultMap">
+        <![CDATA[
+
+        SELECT reg_addr, count(1) as hb_count
+        FROM saf_reg_health
+        WHERE hb_time <= #{endTime} and hb_time >= #{startTime} group by reg_addr
+
+        ]]>
+    </select>
+
+    <select id="getLatestUncheckRegList" resultType="RegHealthInfo">
+        <![CDATA[
+
+        SELECT reg_addr as regAddr, count(1) as hbCount
+        FROM saf_reg_health
+        WHERE reg_addr = #{regAddr} and hb_time <= #{endTime} and hb_time >= #{startTime} group by reg_addr
+
+        ]]>
+    </select>
+
+    <delete id="delHealthHistory">
+        <![CDATA[
+
+          DELETE FROM saf_reg_health where reg_addr = #{regAddr} and hb_time < #{period}
+
+        ]]>
+    </delete>
+
+</mapper>

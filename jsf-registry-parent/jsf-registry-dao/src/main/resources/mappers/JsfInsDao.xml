@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.registry.dao.JsfInsDao">
+    <!-- 业务表 -->
+    <resultMap type="JsfIns" id="InstanceResultMap">
+        <result column="ins_key" property="insKey"/>
+        <result column="ins_ip" property="ip"/>
+        <result column="ins_pid" property="pid"/>
+        <result column="ins_port" property="port"/>
+        <result column="hb_time" property="hb"/>
+        <result column="ins_status" property="status"/>
+        <result column="start_time" property="startTime"/>
+        <result column="reg_ip" property="regIp"/>
+        <result column="saf_ver" property="safVer"/>
+        <result column="language" property="language"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <resultMap type="InstanceInterface" id="InstanceInterfaceResultMap">
+        <result column="ip" property="ip"/>
+        <result column="pid" property="pid"/>
+        <result column="start_time" property="startTime"/>
+        <result column="interface_id" property="interfaceId"/>
+    </resultMap>
+
+    <insert id="create" parameterType="JsfIns">
+        INSERT INTO saf_ins_hb (ins_key, ins_ip, ins_pid, ins_port, hb_time, ins_status, start_time, reg_ip, saf_ver, language, ins_room, jsf_appins_id, app_id, app_ins_id, create_time, cg_open, cg_enhance)
+        VALUES (
+            #{ins.insKey},
+            #{ins.ip},
+            #{ins.pid},
+            #{ins.port},
+            #{ins.hb},
+            #{status},
+            #{ins.startTime},
+            #{ins.regIp},
+            #{ins.safVer},
+            #{ins.language},
+            #{ins.insRoom},
+            #{ins.jsfAppInsId},
+            #{ins.appId},
+            #{ins.appInsId},
+            #{ins.createTime},
+            #{ins.cgOpen},
+            #{ins.cgEnhance}
+            )
+        ON DUPLICATE KEY UPDATE
+            hb_time = #{ins.hb},
+            ins_status = 1,
+            reg_ip = #{ins.regIp},
+            del_time = 0
+    </insert>
+
+    <update id="batchUpdateHb">
+        UPDATE saf_ins_hb SET
+        hb_time = #{hbTime},
+        ins_status = 1,
+        reg_ip = #{regIp},
+        del_time = 0
+        WHERE
+        ins_key IN
+        <foreach collection="insKeyList" item="insKey" index="index" open="(" separator="," close=")">
+            #{insKey}
+        </foreach>
+        AND ins_status IN (0, 1)
+    </update>
+
+    <select id="getInsKeyListByInsKey" resultType="java.lang.String">
+        SELECT ins_key FROM saf_ins_hb
+        WHERE ins_key IN
+        <foreach collection="insKeyList" item="insKey" index="index" open="(" separator="," close=")">
+            #{insKey}
+        </foreach>
+        AND ins_status IN (0, 1)
+    </select>
+
+    <select id="getInsKeyByInsKey" resultType="java.lang.String">
+        SELECT ins_key FROM saf_ins_hb WHERE ins_key = #{insKey} AND ins_status = 1
+    </select>
+
+</mapper>

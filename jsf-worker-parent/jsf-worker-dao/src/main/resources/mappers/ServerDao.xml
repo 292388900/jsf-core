@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.worker.dao.ServerDao">
+    <resultMap type="Server"  id="ServerResultMap">
+        <id column="server_id" property="id"  jdbcType="INTEGER"/>
+        <result column="server_uniquekey" property="uniqKey" />
+        <result column="interface_id" property="interfaceId" />
+        <result column="interface_name" property="interfaceName" />
+        <result column="server_ip" property="ip" />
+        <result column="server_port" property="port" />
+        <result column="server_pid" property="pid" />
+        <result column="server_alias" property="alias" />
+        <result column="server_status" property="status" />
+        <result column="protocol" property="protocol"/>
+        <result column="saf_version" property="safVer" />
+        <result column="is_random" property="isRandom" />
+        <result column="src_type" property="srcType" />
+        <result column="server_weight" property="weight" />
+        <result column="ins_key" property="insKey" />
+        <result column="update_time" property="updateTime" />
+		<result column="attr_url" property="attrUrl" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        server_id, server_uniquekey, interface_id, interface_name, server_ip, server_port, server_pid, server_alias,
+        server_status, protocol, saf_version, is_random, src_type, server_weight, ins_key, update_time, attr_url
+    </sql>
+
+    <!-- +++++++++++++++++++++++++++++ syn zk to db  starting +++++++++++++++++++++++++++++ -->
+    <insert id="create" parameterType="java.util.List">
+        <![CDATA[
+        INSERT INTO saf_server (server_uniquekey, interface_id, interface_name, server_ip, 
+        server_port, server_pid, server_alias, server_status, server_room, server_timeout,
+            server_weight, server_apppath, protocol, context_path, saf_version, is_random, 
+            src_type, start_time, create_time, update_time)
+        VALUES  (
+        ]]>
+        <foreach item="item" index="index" collection="serverList" open="" close=")" separator="),(">
+        	#{item.uniqKey},
+            #{item.interfaceId},
+            #{item.interfaceName},
+            #{item.ip},
+            #{item.port},
+            #{item.pid},
+            #{item.alias},
+            #{item.status},
+            #{item.room},
+            #{item.timeout},
+            #{item.weight},
+            #{item.appPath},
+            #{item.protocol},
+            #{item.contextPath},
+            #{item.safVer},
+            #{item.isRandom},
+            #{item.srcType},
+            #{item.startTime},
+            CURRENT_TIMESTAMP(),
+            CURRENT_TIMESTAMP()
+        </foreach>
+    </insert>
+
+    <update id="update">
+        UPDATE saf_server
+        SET 
+            server_pid = #{pid},
+		    server_status = #{status},
+			server_room = #{room},
+            server_timeout = #{timeout},
+            server_weight = #{weight},
+            server_apppath = #{appPath},
+            context_path = #{contextPath},
+            saf_version = #{safVer},
+            is_random = #{isRandom},
+            update_time = CURRENT_TIMESTAMP()
+        WHERE
+            server_uniquekey = #{uniqKey} AND src_type = 3
+    </update>
+
+    <select id="getUniqKeyList" resultType="java.lang.String">
+        SELECT
+            server_uniquekey
+        FROM saf_server
+        WHERE
+            server_uniquekey IN
+	        <foreach item="uniqKey" index="index" collection="list" open="(" separator="," close=")">
+				#{uniqKey}
+			</foreach>
+    </select>
+    <!-- +++++++++++++++++++++++++++++ syn zk to db  end ++++++++++++++++++++++++++++++++++++++-->
+
+    <!--+++++++++++++++++++++++++++++ scan server status starting +++++++++++++++++++++++++++++-->
+    <update id="updateStatusOnline">
+        UPDATE saf_server
+        SET 
+            server_status = (CASE WHEN server_status = 2 OR server_status = 3 THEN 2
+                                  WHEN server_status = 0 OR server_status = 1 THEN 1
+                                  ELSE 1
+                                  END), 
+            update_time = CURRENT_TIMESTAMP()
+        WHERE
+            server_id = #{serverId} AND src_type = 1
+    </update>
+
+    <update id="updateStatusOffline">
+        UPDATE saf_server
+        SET 
+            server_status = (CASE WHEN server_status = 2 OR server_status = 3 THEN 3
+                                  WHEN server_status = 0 OR server_status = 1 THEN 0
+                                  ELSE 0
+                                  END),
+            update_time = CURRENT_TIMESTAMP()
+        WHERE
+            server_id = #{serverId} AND src_type = 1
+    </update>
+
+    <update id="updateStatusOfflineNotwork">
+        UPDATE saf_server
+        SET 
+            server_status = 3,
+            update_time = CURRENT_TIMESTAMP()
+        WHERE
+            server_id = #{serverId} AND src_type = 1
+    </update>
+
+    <select id="getServersByIns" resultMap="ServerResultMap">
+        SELECT
+            <include refid="Base_Column_List" />
+        FROM saf_server 
+        WHERE ins_key IN
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item.insKey}
+		</foreach>
+        AND src_type = 1
+    </select>
+
+    <select id="getOnlineServersByIns" resultMap="ServerResultMap">
+        SELECT
+            <include refid="Base_Column_List" />
+        FROM saf_server
+        WHERE 
+            ins_key IN
+	        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+				#{item.insKey}
+			</foreach>
+            AND server_status IN (1,2)
+            AND src_type = 1
+    </select>
+
+    <select id="getOfflineServersByIns" resultMap="ServerResultMap">
+        SELECT
+            <include refid="Base_Column_List" />
+        FROM saf_server
+        WHERE
+            ins_key IN
+	        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+				#{item.insKey}
+			</foreach>
+            AND server_status IN (0,3)
+            AND src_type = 1
+    </select>
+
+    <select id="getOfflineServers" resultMap="ServerResultMap">
+        SELECT
+            <include refid="Base_Column_List" />
+        FROM saf_server
+        WHERE
+            server_status IN (0,3)
+            AND src_type = 1
+    </select>
+
+    <select id="getNoInsServers" resultMap="ServerResultMap">
+        SELECT
+            <include refid="Base_Column_List" />
+        FROM saf_server a
+        <![CDATA[
+        WHERE
+            a.src_type = 1
+            AND NOT EXISTS (SELECT * FROM saf_ins_hb b WHERE b.ins_key = a.ins_key)
+        ]]>
+    </select>
+    <!--+++++++++++++++++++++++++++++ scan server status end +++++++++++++++++++++++++++++-->
+
+    <delete id="deleteById" parameterType="java.util.List">
+        DELETE FROM saf_server 
+        WHERE server_id IN
+        <foreach item="item" index="index" collection="idList" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+        AND src_type = #{sourceType}
+    </delete>
+
+    <select id="getListByInterfaceName" resultMap="ServerResultMap">
+        SELECT
+            <include refid="Base_Column_List" />
+        FROM saf_server
+        WHERE
+            interface_name = #{interfaceName} AND server_status IN (0, 1)
+    </select>
+
+    <select id="getListByInterfaceNameAndAlias" resultMap="ServerResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM saf_server
+        WHERE
+        interface_name = #{interfaceName} AND server_status IN (0, 1) AND server_alias = #{alias}
+    </select>
+    
+    <select id="getJsfServers" resultMap="ServerResultMap">
+        SELECT
+            <include refid="Base_Column_List" />
+        FROM saf_server
+        WHERE
+            interface_name = #{interfaceName} and src_type != 3 AND server_status IN (0, 1)
+    </select>
+
+    <select id="getListByInterfaceId" resultMap="ServerResultMap">
+        SELECT
+            <include refid="Base_Column_List" />
+        FROM saf_server
+        WHERE
+            interface_id = #{interfaceId} AND server_status IN (0, 1)
+    </select>
+
+    <select id="getJsfVerCount" parameterType="java.lang.String" resultType="int">
+    	select count(1) from saf_server where saf_version=210 and interface_name=#{interfaceName}
+    </select>
+
+    <select id="getServersByApp" resultMap="ServerResultMap">
+        SELECT
+            server_id, interface_id, interface_name, server_ip, server_port, server_pid, server_alias, protocol, saf_version, server_uniquekey
+        FROM saf_server 
+        WHERE ins_key IN (
+	        SELECT ins_key FROM saf_ins_hb WHERE app_id = #{appId} and app_ins_id=#{appInsId}
+			<if test="pid != null and '' != pid">
+				AND ins_pid = #{pid}
+			</if>
+		) AND server_status IN (0, 1, 2)
+    </select>
+
+    <update id="updateServerToOnline">
+        UPDATE saf_server
+        SET 
+            opt_type = 1,
+            update_time = CURRENT_TIMESTAMP()
+        WHERE
+            src_type = 1
+            AND server_id IN
+            <foreach item="serverId" index="index" collection="serverIds" open="(" separator="," close=")">
+				#{serverId}
+			</foreach>
+    </update>
+
+    <update id="updateServerToOffline">
+        UPDATE saf_server
+        SET 
+            opt_type = 0,
+            update_time = CURRENT_TIMESTAMP()
+        WHERE
+            src_type = 1
+            AND server_id IN
+            <foreach item="serverId" index="index" collection="serverIds" open="(" separator="," close=")">
+				#{serverId}
+			</foreach>
+    </update>
+
+    <select id="getServersForDynamicGrouping" parameterType="java.util.Map" resultMap="ServerResultMap">
+        SELECT server_id,server_uniquekey,interface_id, src_type, server_alias
+        FROM saf_server
+        WHERE server_ip = #{serverIp} AND server_alias = #{serverAlias} AND interface_name IN
+        <foreach item="interfaceName" index="index" collection="interfaceNames" open="(" separator="," close=")">
+            #{interfaceName}
+        </foreach>
+    </select>
+
+    <select id="listAliasByIfaceId" resultType="java.lang.String">
+        SELECT
+        DISTINCT server_alias
+        FROM saf_server
+        WHERE
+        interface_id = #{interfaceId}
+    </select>
+
+    <!--根据接口id和alias统计provider个数-->
+    <select id="getCountByIfaceAndAlias" resultType="int">
+        select count(1) from saf_server where interface_id = #{interfaceId} and server_alias=#{serverAlias}
+    </select>
+    
+    <select id="listByInterfaceName" resultType="java.util.HashMap">
+        select s.server_ip
+        from saf_server s
+        where s.interface_name=#{interfaceName} and s.server_status IN (0, 1)
+    </select>
+
+</mapper>

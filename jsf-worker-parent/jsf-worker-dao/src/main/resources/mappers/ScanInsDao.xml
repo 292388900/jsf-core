@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.worker.dao.ScanInsDao">
+    <!-- 业务表 -->
+    <resultMap type="JsfIns"  id="InstanceResultMap">
+        <result column="ins_key" property="insKey" />
+        <result column="ins_ip" property="ip" />
+        <result column="ins_pid" property="pid" />
+        <result column="hb_time" property="hb" />
+        <result column="ins_status" property="status" />
+        <result column="start_time" property="startTime" />
+        <result column="reg_ip" property="regIp" />
+        <result column="saf_ver" property="safVer" />
+        <result column="language" property="language" />
+    </resultMap>
+
+    <resultMap type="InstanceInterface"  id="InstanceInterfaceResultMap">
+        <result column="ip" property="ip" />
+        <result column="pid" property="pid" />
+        <result column="start_time" property="startTime" />
+        <result column="interface_id" property="interfaceId" />
+        <result column="interface_name" property="interfaceName" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        ins_key, ins_ip, ins_pid, hb_time, ins_status, start_time, reg_ip, saf_ver, language
+    </sql>
+
+    <update id="updateStatusOffline">
+        <![CDATA[
+        UPDATE saf_ins_hb SET ins_status = #{status}
+        WHERE ins_key = #{insKey} AND ins_status = 1
+        ]]>
+    </update>
+
+    <delete id="deleteByInsKey">
+        <![CDATA[
+        DELETE FROM saf_ins_hb
+        WHERE
+            ins_key = #{insKey} AND ins_status = 5
+        ]]>
+    </delete>
+
+    <update id="tagInsToDel">
+        <![CDATA[
+        UPDATE saf_ins_hb
+        SET
+            ins_status = #{status},
+            del_time = #{delTime}
+        WHERE
+            ins_key = #{insKey} AND ins_status = 0
+        ]]>
+    </update>
+
+    <select id="getOnlineInsBeforeTime" resultMap="InstanceResultMap">
+        SELECT
+            ins_key, ins_ip, ins_pid, hb_time, ins_status, start_time
+        FROM saf_ins_hb
+        WHERE
+        <![CDATA[
+            ins_status = 1
+            AND hb_time BETWEEN '2000-01-01 00:00:00' AND #{time} 
+        ]]>
+        <if test="registryList != null">
+            AND reg_ip NOT IN
+            <foreach item="item" index="index" collection="registryList" open="(" separator="," close=")">
+			#{item}
+		    </foreach>
+        </if>
+        LIMIT 20000
+    </select>
+
+    <select id="getOnlineInsBeforeTimeByRooms" resultMap="InstanceResultMap">
+        SELECT
+        ins_key, ins_ip, ins_pid, hb_time, ins_status, start_time
+        FROM saf_ins_hb
+        WHERE
+        <![CDATA[
+            ins_status = 1
+            AND hb_time BETWEEN '2000-01-01 00:00:00' AND #{time}
+        ]]>
+        <if test="registryList != null">
+            AND reg_ip NOT IN
+            <foreach item="item" index="index" collection="registryList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="rooms != null">
+            AND ins_room IN
+            <foreach item="item" index="index" collection="rooms" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        LIMIT 20000
+    </select>
+
+    <select id="getOfflineInsBeforeTime" resultMap="InstanceResultMap">
+        SELECT
+            <include refid="Base_Column_List" />
+        FROM saf_ins_hb
+        WHERE
+        <![CDATA[
+            ins_status = 0
+            AND hb_time BETWEEN '2000-01-01 00:00:00' AND #{time} 
+        ]]>
+        <if test="registryList != null">
+            AND reg_ip NOT IN
+            <foreach item="item" index="index" collection="registryList" open="(" separator="," close=")">
+			#{item}
+		    </foreach>
+        </if>
+        LIMIT 20000
+    </select>
+
+    <select id="getOfflineInsBeforeTimeByRooms" resultMap="InstanceResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM saf_ins_hb
+        WHERE
+        <![CDATA[
+            ins_status = 0
+            AND hb_time BETWEEN '2000-01-01 00:00:00' AND #{time}
+        ]]>
+        <if test="registryList != null">
+            AND reg_ip NOT IN
+            <foreach item="item" index="index" collection="registryList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="rooms != null">
+            AND ins_room IN
+            <foreach item="item" index="index" collection="rooms" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        LIMIT 20000
+    </select>
+
+    <select id="getDelUnregInsBeforeTime" resultMap="InstanceResultMap">
+        SELECT
+            DISTINCT <include refid="Base_Column_List" />
+        FROM saf_ins_hb, 
+             (SELECT ins_key AS insKey FROM saf_server WHERE src_type = 1 GROUP BY ins_key HAVING COUNT(1) = SUM(CASE server_status WHEN 4 THEN 1 ELSE 0 END)
+             UNION
+              SELECT ins_key AS insKey FROM saf_client WHERE src_type = 1 GROUP BY ins_key HAVING COUNT(1) = SUM(CASE client_status WHEN 4 THEN 1 ELSE 0 END)
+             ) b
+        WHERE
+        <![CDATA[
+            hb_time BETWEEN '2000-01-01 00:00:00' AND #{time} 
+            AND ins_key = b.insKey AND ins_status = 5
+            LIMIT 100
+        ]]>
+    </select>
+
+    <select id="getDelUnregInsBeforeTimeByRooms" resultMap="InstanceResultMap">
+        SELECT
+        DISTINCT <include refid="Base_Column_List" />
+        FROM saf_ins_hb,
+        (SELECT ins_key AS insKey FROM saf_server WHERE src_type = 1 GROUP BY ins_key HAVING COUNT(1) = SUM(CASE server_status WHEN 4 THEN 1 ELSE 0 END)
+        UNION
+        SELECT ins_key AS insKey FROM saf_client WHERE src_type = 1 GROUP BY ins_key HAVING COUNT(1) = SUM(CASE client_status WHEN 4 THEN 1 ELSE 0 END)
+        ) b
+        WHERE
+        <![CDATA[
+            hb_time BETWEEN '2000-01-01 00:00:00' AND #{time}
+            AND ins_key = b.insKey AND ins_status = 5
+        ]]>
+        <if test="rooms != null">
+            AND ins_room IN
+            <foreach item="item" index="index" collection="rooms" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        LIMIT 100
+    </select>
+
+    <select id="getDelInsBeforeTime" resultMap="InstanceResultMap">
+        SELECT
+            <include refid="Base_Column_List" />
+        FROM saf_ins_hb
+        WHERE
+        <![CDATA[
+            ins_status = 5
+            AND hb_time BETWEEN '2000-01-01 00:00:00' AND #{time} 
+            LIMIT 100
+        ]]>
+    </select>
+
+    <select id="getDelInsBeforeTimeByRooms" resultMap="InstanceResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM saf_ins_hb
+        WHERE
+        <![CDATA[
+            ins_status = 5
+            AND hb_time BETWEEN '2000-01-01 00:00:00' AND #{time}
+        ]]>
+        <if test="rooms != null">
+            AND ins_room IN
+            <foreach item="item" index="index" collection="rooms" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        LIMIT 100
+    </select>
+
+    <select id="getRevivalInsListByServer" resultMap="InstanceResultMap">
+        SELECT
+            <include refid="Base_Column_List" />
+        FROM saf_ins_hb
+        WHERE
+        	ins_status = 1 AND ins_key IN (SELECT ins_key FROM saf_server WHERE server_status IN (0, 5) AND src_type = 1)
+        LIMIT 20000
+    </select>
+
+    <select id="getRevivalInsListByServerAndRooms" resultMap="InstanceResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM saf_ins_hb
+        WHERE
+        ins_status = 1 AND ins_key IN (SELECT ins_key FROM saf_server WHERE server_status IN (0, 5) AND src_type = 1)
+        <if test="rooms != null">
+            AND ins_room IN
+            <foreach item="item" index="index" collection="rooms" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        LIMIT 20000
+    </select>
+
+    <select id="getRevivalInsListByClient" resultMap="InstanceResultMap">
+        SELECT
+            <include refid="Base_Column_List" />
+        FROM saf_ins_hb
+        WHERE
+        	ins_status = 1 AND ins_key IN (SELECT ins_key FROM saf_client WHERE client_status IN (0, 5))
+        LIMIT 20000
+    </select>
+
+    <select id="getRevivalInsListByClientAndRooms" resultMap="InstanceResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM saf_ins_hb
+        WHERE
+        ins_status = 1 AND ins_key IN (SELECT ins_key FROM saf_client WHERE client_status IN (0, 5))
+        <if test="rooms != null">
+            AND ins_room IN
+            <foreach item="item" index="index" collection="rooms" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        LIMIT 20000
+    </select>
+
+</mapper>

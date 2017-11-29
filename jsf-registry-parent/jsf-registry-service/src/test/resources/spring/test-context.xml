@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
+	default-lazy-init="false" default-autowire="byName">
+
+	<description>Spring公共配置</description>
+
+	<!--全局配置地址 -->
+	<bean id="globalConfiguration" class="org.springframework.beans.factory.config.PropertiesFactoryBean"> 
+<!-- 		<property name="location" value="classpath:global.properties"/> -->
+		<property name="locations">
+			<list>
+				<!-- 标准配置 -->
+				<value>classpath*:/global.properties</value>
+				<value>classpath*:/important.properties</value>
+			</list>
+		</property>
+    </bean>
+
+	<import resource="spring-database.xml" />
+<!-- 	<saf:reference id="safEventBus" interface="com.ipd.saf.worker.service.SafEventBus" -->
+<!--                    url="saf://127.0.0.1:20990" retries="0" -->
+<!--                    protocol="saf" alias="saf" timeout="60000" proxy="jdk"> -->
+<!--     </saf:reference> -->
+
+<!-- 	<context:component-scan -->
+<!-- 		base-package="com.ipd.saf.registry.service.impl,com.ipd.saf.service.impl,com.ipd.saf.registry.manager.impl" /> -->
+	<context:component-scan
+		base-package="com.ipd.jsf.registry,com.ipd.jsf.registry.berkeley" />
+	<aop:aspectj-autoproxy expose-proxy="true" />
+
+	<context:annotation-config />
+	<bean id="berkeleyDb" class="com.ipd.jsf.registry.berkeley.dao.BerkeleyDb" destroy-method="close">
+		<constructor-arg value="#{globalConfiguration['localdb.path']}"></constructor-arg>
+	</bean>
+</beans>

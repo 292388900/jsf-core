@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <typeAliases>
+        <typeAlias type="com.ipd.jsf.worker.domain.Server" alias="Server"/>
+        <typeAlias type="com.ipd.jsf.worker.domain.Client" alias="Client"/>
+        <typeAlias type="com.ipd.jsf.worker.domain.JsfIns" alias="JsfIns"/>
+        <typeAlias type="com.ipd.jsf.worker.domain.InterfaceInfo" alias="InterfaceInfo"/>
+        <typeAlias type="com.ipd.jsf.worker.domain.InterfaceProperty" alias="InterfaceProperty"/>
+        <typeAlias type="com.ipd.jsf.worker.domain.SynZkDBLog" alias="SynZkDBLog"/>
+        <typeAlias type="com.ipd.jsf.worker.domain.InstanceInterface" alias="InstanceInterface"/>
+        <typeAlias type="com.ipd.jsf.worker.domain.ServiceTraceLog" alias="ServiceTraceLog"/>
+        <typeAlias type="com.ipd.jsf.worker.domain.JsfRegAddr" alias="JsfRegAddr"/>
+        <typeAlias type="com.ipd.jsf.worker.domain.SysParam" alias="SysParam"/>
+        <typeAlias type="com.ipd.jsf.worker.domain.IfaceInsStat" alias="IfaceInsStat"/>
+
+        <typeAlias type="com.ipd.jsf.worker.domain.RegistryStat" alias="RegistryStat"/>
+        <typeAlias type="com.ipd.jsf.worker.domain.RegistryReq" alias="RegistryReq"/>
+        <typeAlias type="com.ipd.jsf.common.monitor.ShardOperation" alias="InfluxdbSyncTask"/>
+        <typeAlias type="com.ipd.jsf.worker.domain.JsfApp" alias="JsfApp"/>
+        <typeAlias type="com.ipd.jsf.worker.domain.JsfAppUser" alias="JsfAppUser"/>
+        <typeAlias type="com.ipd.jsf.worker.domain.JsfCheckHistory" alias="JsfCheckHistory"/>
+
+        <typeAlias type="com.ipd.jsf.worker.domain.JsfCheckHistory" alias="JsfCheckHistory"/>
+        <typeAlias type="com.ipd.jsf.worker.domain.JsfRoom" alias="JsfRoom"/>
+
+        <typeAlias type="com.ipd.jsf.worker.domain.ServerAlias" alias="ServerAlias"/>
+        <typeAlias type="com.ipd.jsf.worker.domain.UserAction" alias="UserAction"/>
+
+        <typeAlias type="com.ipd.jsf.worker.domain.RegHealthInfo" alias="RegHealthInfo"/>
+
+        <typeAlias type="com.ipd.jsf.worker.domain.AppIns" alias="AppIns"/>
+
+    </typeAliases>
+
+</configuration>

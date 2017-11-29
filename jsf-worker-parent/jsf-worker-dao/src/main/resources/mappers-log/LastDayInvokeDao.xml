@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.worker.log.dao.LastDayInvokeDao">
+
+    <insert id="insert">
+        <![CDATA[
+        INSERT INTO saf_lastday_calltime (
+			`calltimes`,
+			`invoke_date`,
+			`create_time`
+			)
+        VALUES (
+        	#{callTimes},
+        	#{invokeDate},
+        	#{createTime}
+        	)
+        ]]>
+    </insert>
+    
+     <insert id="insertIface">
+        <![CDATA[
+        INSERT INTO saf_iface_invokehisto (
+			`interface_name`,
+			`method`,
+			`calltimes`,
+			`invoke_date`,
+			`create_time`
+			)
+        VALUES (
+        	#{interfaceName},
+        	#{method},
+        	#{callTimes},
+        	#{invokeDate},
+        	#{createTime}
+        	)
+        ]]>
+    </insert>
+
+    <insert id="insertIfaceHistoHour">
+        <![CDATA[
+        INSERT INTO saf_iface_invokehisto_hour (
+			`interface_name`,
+			`method`,
+			`calltimes`,
+			`invoke_date`,
+			`invoke_date_time`,
+			`create_time`
+			)
+        VALUES (
+        	#{interfaceName},
+        	#{method},
+        	#{callTimes},
+        	#{invokeDate},
+        	#{invokeDateTime},
+        	#{createTime}
+        	)
+        ]]>
+    </insert>
+	
+	<select id="getByDate" parameterType="java.lang.String" resultType="int">
+		select count(1) from saf_lastday_calltime where invoke_date=#{invokeDate}
+	</select>
+
+    <select id="deleteCalltimeByDate" parameterType="java.lang.String">
+        delete from saf_lastday_calltime where invoke_date=#{invokeDate}
+    </select>
+	
+	<select id="getIfaceByDate" parameterType="com.ipd.jsf.worker.domain.LastDayInvoke" resultType="int">
+		select count(1) from saf_iface_invokehisto where invoke_date=#{invokeDate} and interface_name=#{interfaceName} 
+		and `method`=#{method}
+	</select>
+
+    <select id="getIfaceHistoSumByDate" parameterType="com.ipd.jsf.worker.domain.LastDayInvoke" resultType="long">
+        select sum(callTimes) from saf_iface_invokehisto where invoke_date=#{invokeDate}
+    </select>
+
+    <select id="getIfaceHistoHourCountByDateTime" parameterType="com.ipd.jsf.worker.domain.LastDayInvoke" resultType="int">
+        select count(1) from saf_iface_invokehisto_hour where invoke_date_time=#{invokeDateTime} and interface_name=#{interfaceName}
+        and `method`=#{method}
+    </select>
+
+    <select id="getIfaceHistoHourSumByDate" parameterType="com.ipd.jsf.worker.domain.LastDayInvoke" resultType="long">
+        select sum(callTimes) from saf_iface_invokehisto_hour where invoke_date=#{invokeDate} and interface_name=#{interfaceName}
+        and `method`=#{method}
+    </select>
+
+    <select id="deleteIfaceInvoke" parameterType="com.ipd.jsf.worker.domain.LastDayInvoke">
+        delete from saf_iface_invokehisto where invoke_date=#{invokeDate} and interface_name=#{interfaceName} and `method`=#{method}
+    </select>
+
+    <update id="updateCallTimesLastDay">
+      UPDATE saf_lastday_calltime SET calltimes=#{callTimes} WHERE invoke_date=#{invokeDate}
+    </update>
+
+    <update id="updateCallTimesIface">
+      UPDATE saf_iface_invokehisto SET calltimes=#{callTimes}
+       WHERE interface_name=#{interfaceName} AND method=#{method} AND invoke_date=#{invokeDate}
+    </update>
+
+    <update id="updateIfaceHistoHour">
+        UPDATE saf_iface_invokehisto_hour SET calltimes=#{callTimes}
+        WHERE interface_name=#{interfaceName} AND method=#{method} AND invoke_date_time=#{invokeDateTime}
+    </update>
+
+    <delete id="deleteIfaceHistoByDate" parameterType="java.lang.String">
+        delete from saf_iface_invokehisto where invoke_date=#{invokeDate}
+    </delete>
+
+    <delete id="deleteIfaceHistoHourByDate" parameterType="java.lang.String">
+        delete from saf_iface_invokehisto_hour where invoke_date=#{invokeDate}
+    </delete>
+</mapper>

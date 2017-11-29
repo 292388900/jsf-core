@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ipd.jsf.worker.dao.JsfRoomDAO">
+
+    <resultMap type="JsfRoom" id="_resultMap">
+        <result column="id" property="id"/>
+        <result column="room" property="room"/>
+        <result column="ip_section" property="ipSection"/>
+        <result column="ip_regular" property="ipRegular"/>
+    </resultMap>
+
+    <sql id="selectSQL">
+		id, `room`, ip_section, ip_regular
+	</sql>
+
+    <sql id="whereSQL">
+        <where>
+            <if test="params.room != null and params.room != ''">
+                and room = #{params.room}
+            </if>
+            <if test="params.ipSection != null and params.ipSection != ''">
+                and ip_section = #{params.ipSection}
+            </if>
+        </where>
+    </sql>
+
+    <select id="listAll" resultMap="_resultMap">
+        select
+        <include refid="selectSQL"/>
+        from
+        saf_room
+        order by id desc
+    </select>
+
+
+</mapper>

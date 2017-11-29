@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.worker.dao.InterfaceInfoDao">
+    <resultMap type="InterfaceInfo"  id="InterfaceInfoResultMap">
+        <id column="id" property="interfaceId"  jdbcType="INTEGER"/>
+        <result column="interfaceName" property="interfaceName" />
+        <result column="modifiedTime" property="updateTime" />
+        <result column="ownerUser" property="ownerUser" />
+        <result column="valid" property="valid" />
+        <result column="creator" property="creator" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        a.id, a.interfaceName, a.ownerUser, a.valid, a.modifiedTime, a.creator
+    </sql>
+
+    <insert id="create" parameterType="InterfaceInfo" useGeneratedKeys="true" keyProperty="interfaceId">
+        <![CDATA[
+        INSERT INTO saf_interface (interfaceName, important, remark, department,departmentCode, ownerUser, creator, modifier, createdTime, modifiedTime, src, hasJsfClient)
+        VALUES (
+            #{interfaceName},
+            #{important},
+            #{remark},
+            #{department},
+            #{departmentCode},
+            #{ownerUser},
+            #{creator},
+            #{modifier},
+            #{createTime},
+            #{updateTime},
+            #{source},
+            #{hasJsfClient}
+            )
+        ]]>
+    </insert>
+    
+    <insert id="insert" parameterType="InterfaceInfo" useGeneratedKeys="true" keyProperty="interfaceId">
+        <![CDATA[
+        INSERT INTO saf_interface (interfaceName, important, remark, department,departmentCode, ownerUser, creator, modifier, createdTime, modifiedTime, src, hasJsfClient)
+        VALUES (
+            #{interfaceName},
+            #{important},
+            #{remark},
+            #{department},
+            #{departmentCode},
+            #{ownerUser},
+            #{creator},
+            #{modifier},
+            #{createTime},
+            #{updateTime},
+            #{source},
+            #{hasJsfClient}
+            )
+        ]]>
+    </insert>
+
+    <update id="update" parameterType="InterfaceInfo">
+        UPDATE saf_interface 
+        SET
+            remark = #{remark},
+            <if test="department != null and department != ''">department=#{department},</if>
+            <if test="departmentCode != null and departmentCode != ''">departmentCode=#{departmentCode},</if>
+            ownerUser = #{ownerUser},
+            modifiedTime = #{updateTime}
+        WHERE
+            interfaceName = #{interfaceName}
+    </update>
+
+    <select id="getCrossLangInterfaceIds" resultType="java.lang.Integer">
+        SELECT DISTINCT interface_id
+        FROM saf_server 
+        WHERE server_status = 1 AND attr_url LIKE '%crossLang=true%'
+    </select>
+
+    <update id="updateCrossLang" parameterType="InterfaceInfo">
+        <![CDATA[
+        UPDATE saf_interface 
+        SET cross_lang = (
+                          SELECT (CASE WHEN crosscount > 0 THEN 2 ELSE 0 END ) 
+                          FROM (
+                                SELECT COUNT(server_id) AS total, SUM(CASE WHEN attr_url LIKE '%crossLang=true%' THEN 1 ELSE 0 END) AS crosscount 
+                                FROM saf_server WHERE interface_id = #{interfaceId}
+                                ) AS a
+                          )
+        WHERE id = #{interfaceId}
+        ]]>
+    </update>
+
+    <select id="getByInterfaceName" resultMap="InterfaceInfoResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM saf_interface a
+        WHERE
+            a.interfaceName = #{interfaceName}
+    </select>
+
+    <select id="getAll" resultMap="InterfaceInfoResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM saf_interface a
+    </select>
+
+    <select id="getInterfaceByCreateTime" resultMap="InterfaceInfoResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM saf_interface a
+        WHERE
+		    a.valid = 1 AND a.createdTime > #{time}
+    </select>
+
+    <select id="getAllWithJsfclient" resultMap="InterfaceInfoResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM saf_interface a where a.valid=1
+        <if test="date != null">
+            and createdTime &lt; #{date}
+        </if>
+    </select>
+
+    <select id="getInterfaceVersionByTime" resultMap="InterfaceInfoResultMap">
+		SELECT
+			a.id, a.interfaceName, b.update_time
+		FROM saf_interface a INNER JOIN saf_iface_version b ON a.id = b.interface_id
+		WHERE
+		    a.valid = 1 AND b.update_time > #{time} AND a.syntozk = 1
+    </select>
+
+    <resultMap type="InterfaceInfo"  id="ErpsResultMap">
+        <id column="id" property="interfaceId"  jdbcType="INTEGER"/>
+        <result column="interfaceName" property="interfaceName" />
+        <result column="ownerUser" property="ownerUser" />
+    </resultMap>
+
+    <select id="getErps" resultMap="ErpsResultMap">
+		SELECT
+			id, interfaceName, ownerUser
+		FROM saf_interface 
+		WHERE
+		    valid = 1
+    </select>
+    
+    <update id="updateJsfVer" parameterType="java.lang.String">
+    	update saf_interface set hasJsfClient=1 where interfaceName=#{interfaceName}
+    </update>
+    
+    <select id="getOwnerUsers" resultType="java.lang.String" parameterType="InterfaceInfo">
+    	select distinct pin as erp from saf_user_resource u where u.resId in 
+    	(select id from saf_interface where interfaceName=#{interfaceName}) and u.resType=2 
+    </select>
+    
+    <insert id="batchInsertResource" parameterType="java.util.List" useGeneratedKeys="true" keyColumn="id">
+		insert into 
+		saf_user_resource
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			pin,
+			resId,
+			roleId,
+			resType,
+		</trim>
+		values
+		<foreach collection="list" item="item" index="index" separator="," >
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			#{item.pin},
+			#{item.resId},
+			#{item.roleId},
+			#{item.resType},
+		</trim> 
+        </foreach>  
+	</insert>
+	
+	<select id="findAuthErps" resultType="java.lang.String">
+		select pin  
+		from 
+		saf_user_resource
+		where
+		resId = #{resId} and resType = #{resType}
+	</select>
+
+	<select id="getAlarmErps" resultType="java.lang.String">
+		select r.pin as erp
+		from saf_interface i, saf_user_resource r
+		where i.id = r.resId and i.interfaceName = #{interfaceName}
+	</select>
+	
+	<update id="deleteToSave">
+        update  saf_interface 
+		<set>
+		    <if test="department != null and department != ''">department=#{department},</if>
+            <if test="departmentCode != null and departmentCode != ''">departmentCode=#{departmentCode},</if>
+		    <if test="ownerUser != null and ownerUser != ''">ownerUser=#{ownerUser},</if>
+		    remark=#{remark},
+		    valid = 1,
+		    modifier = #{modifier},
+		    creator = #{creator},
+			createdTime = #{createTime}
+		</set> 
+		where interfaceName=#{interfaceName}
+	</update>
+	
+	<update id="updateByName">
+            update 
+			saf_interface 
+			<set>
+				ownerUser = #{ownerUser},
+                <if test="department != null and department != ''">department=#{department},</if>
+                <if test="departmentCode != null and departmentCode != ''">departmentCode=#{departmentCode},</if>
+				remark = #{remark}
+			</set> 
+			where valid = 1 and interfaceName=#{interfaceName}
+	</update>
+
+    <update id="sumProviderAndConsumer">
+        update saf_interface i set
+	    i.provider_total = (select count(s.server_id) from saf_server s where s.interface_name = i.interfaceName and s.server_status in (0, 1)),
+	    i.provider_live = (select count(s.server_id) from saf_server s where s.interface_name = i.interfaceName and s.server_status = 1),
+	    i.consumer_total = (select count(c.client_id) from saf_client c where c.interface_name = i.interfaceName and c.client_status in (0, 1)),
+	    i.consumer_live =  (select count(c.client_id) from saf_client c where c.interface_name = i.interfaceName and c.client_status = 1)
+       where valid = 1
+    </update>
+
+    <!--2015.12.22 zcc 以下为worker更新表中departmentCode 字段-->
+    <resultMap type="InterfaceInfo"  id="InterfaceInfoResultMapForWorkerUpdDept">
+        <id column="id" property="interfaceId"  jdbcType="INTEGER"/>
+        <result column="interfaceName" property="interfaceName" />
+        <result column="department" property="department" />
+        <result column="departmentCode" property="departmentCode" />
+        <result column="modifiedTime" property="updateTime" />
+        <result column="ownerUser" property="ownerUser" />
+        <result column="valid" property="valid" />
+        <result column="creator" property="creator" />
+    </resultMap>
+
+    <update id="updateDepartmentCode">
+        update saf_interface
+        <set>
+            <if test="departmentCode != null and departmentCode != ''">departmentCode = #{departmentCode},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="count" resultType="int">
+        select
+        count(id)
+        from
+        saf_interface
+    </select>
+
+    <select id="list" resultMap="InterfaceInfoResultMapForWorkerUpdDept">
+        SELECT
+        id, `interfaceName`,department,departmentCode,`ownerUser`, valid, modifiedTime, creator
+        FROM saf_interface
+        order by id asc
+        limit #{offset}, #{size}
+    </select>
+
+    <select id="listAll" resultMap="InterfaceInfoResultMapForWorkerUpdDept">
+        SELECT
+        id, `interfaceName`,department,departmentCode,`ownerUser`, valid, modifiedTime, creator
+        FROM saf_interface
+    </select>
+    
+    <select id="listByPage" resultType="java.util.HashMap">
+    	SELECT
+			id,interfaceName,ownerUser
+		FROM
+			saf_interface
+		where valid=1 limit #{start},#{size}
+    </select>
+
+</mapper>

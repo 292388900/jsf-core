@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.worker.dao.SysParamDao">
+    <resultMap type="SysParam"  id="SysParamResultMap">
+        <id column="id" property="id"  jdbcType="INTEGER"/>
+        <result column="param_key" property="key" />
+        <result column="param_value" property="value" />
+        <result column="param_type" property="type" />
+    </resultMap>
+    
+    <sql id="selectSQL">
+		`id`,`param_key`,`param_name`,`param_value`,`param_type`,`note`,`create_time`, `update_time`
+	</sql>
+    
+    <sql id="whereSQL">
+		<where>
+		    1 = 1 
+		    <if test="params.paraType > 0">
+		        and `param_type` = #{params.paraType}
+		    </if>
+		    <if test="params.paraName != null and params.paraName != ''">
+		        and `param_name` like  CONCAT('%', #{params.paraName}, '%' )
+		    </if>
+		    <if test="params.paraValue != null and params.paraValue != ''">
+		        and `param_value` = #{params.paraValue}
+		    </if>
+		    <if test="params.paraKey != null and params.paraKey != ''">
+		        and `param_key` = #{params.paraKey}
+		    </if>
+		    <if test="params.paraCommon != null and params.paraCommon != ''">
+		        and `note` like  CONCAT('%','${params.paraCommon}', '%' )
+		    </if>
+		    
+		</where>
+	</sql>
+
+    <insert id="create" parameterType="SysParam" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+        INSERT INTO saf_param (param_key, param_name, param_value, param_type, note, create_time, update_time)
+        VALUE (
+            #{key},
+            #{name},
+            #{value},
+            #{type},
+            #{note},
+            #{createTime},
+            #{updateTime}
+            )
+        ]]>
+    </insert>
+
+    <update id="update">
+        UPDATE saf_param
+        SET 
+            param_value = #{value},
+            update_time = #{updateTime}
+        WHERE
+            id = #{id}
+    </update>
+
+    <select id="get" resultMap="SysParamResultMap">
+        SELECT DISTINCT
+        	id, param_key, param_value, param_type
+        FROM saf_param
+        WHERE
+            param_key = #{key}
+            AND param_type = #{type}
+    </select>
+    
+    <select id="findBykey" resultType="string" parameterType="string">
+		select param_value from saf_param  where param_key=#{key}
+	</select>
+	
+	<select id="list" resultMap="SysParamResultMap">
+		select 
+		<include refid="selectSQL" />
+		from 
+		saf_param
+        <include refid="whereSQL" />
+		order by create_time desc
+		limit #{offset}, #{size}
+	</select>
+
+</mapper>

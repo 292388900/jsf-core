@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+            http://www.springframework.org/schema/context
+			http://www.springframework.org/schema/context/spring-context-3.2.xsd
+			http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util-3.2.xsd
+            http://www.springframework.org/schema/aop
+            http://www.springframework.org/schema/aop/spring-aop-3.2.xsd"
+       default-lazy-init="false" default-autowire="byName" >
+
+	<description>Spring公共配置 </description>
+    <!--<context:component-scan base-package="com.ipd.jsf.worker"/>-->
+    <util:properties id="workerConfig" location="classpath:worker.properties"/>
+
+	<!--全局配置地址 -->
+	<bean id="globalConfiguration" class="org.springframework.beans.factory.config.PropertiesFactoryBean"> 
+		<property name="locations">
+			<list>
+				<!-- 标准配置 -->
+				<value>classpath*:/global.properties</value>
+				<value>classpath*:/important.properties</value>
+			</list>
+		</property>
+    </bean>
+	<import resource="spring-database.xml" />
+	<context:component-scan base-package="com.ipd.jsf.worker.service.impl,com.ipd.jsf.worker.manager.impl" />
+	<aop:aspectj-autoproxy expose-proxy="true" />
+	<context:annotation-config />
+
+    <bean  class="com.ipd.jsf.worker.common.WorkerManager" init-method="init"/>
+</beans>

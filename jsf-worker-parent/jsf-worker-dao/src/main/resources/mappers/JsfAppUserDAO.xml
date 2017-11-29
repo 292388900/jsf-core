@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ipd.jsf.worker.dao.JsfAppUserDAO">
+	<resultMap type="JsfAppUser"  id="_resultMap">
+        <id column="id" property="id"  jdbcType="INTEGER"/>
+        <!-- <result column="appip_id" property="appipId" /> -->
+        <result column="app_id" property="appId" />
+        <result column="app_name" property="appName" />
+        <result column="pin" property="pin" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap> 
+    
+
+	<sql id="whereSQL">
+		<where>
+			<if test="params.appName != null and params.appName != ''">
+				and a.app_name = #{params.appName}
+			</if>
+		    <if test="params.pin != null and params.pin != ''">
+		        and lower(au.pin) like lower(concat('%', trim(#{params.pin}),'%' ))
+		    </if>
+		</where>
+	</sql>
+	
+	<insert id="insert" parameterType="JsfAppUser" useGeneratedKeys="true" keyProperty="id">
+		insert into 
+		saf_app_user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			`app_id`, 
+			`pin`, 
+			create_time,
+			update_time
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{appId},
+			#{pin},
+			#{createTime},
+			#{updateTime}
+		</trim>
+	</insert>
+	
+	
+	<insert id="batchInsert" useGeneratedKeys="true" keyColumn="id">
+		insert into 
+		saf_app_user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			`app_id`, 
+			`pin`, 
+			create_time,
+			update_time
+		</trim>
+		values
+		<foreach collection="ifaces" item="item" index="index" separator="," >
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+			#{item.appId},
+			#{item.pin},
+			#{item.createTime},
+			#{item.updateTime}
+		</trim>
+        </foreach>  
+	</insert>
+	
+
+	<update id="update">
+		update 
+		saf_app_user
+		<set>
+		    pin=#{pin},
+		    app_id=#{appId}
+		</set> 
+		where 
+		id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from saf_app_user where id = #{id}
+	</delete>
+	
+	<select id="isExists" resultType="int">
+		select 
+		count(id)
+		from 
+		saf_app_user 
+		where app_id = #{appId} 
+	</select>
+	
+    <select id="count" resultType="int">
+		select 
+		count(distinct au.id)
+		from 
+		saf_app_user au 
+		left join saf_app a 
+		on a.app_id = au.app_id 
+        <include refid="whereSQL" />
+	</select>
+		
+	<select id="list" resultMap="_resultMap">
+		select distinct au.*, a.app_id, a.app_name 
+		from 
+		saf_app_user au 
+		left join saf_app a 
+		on a.app_id = au.app_id 
+        <include refid="whereSQL" /> 
+        order by au.id desc 
+		limit #{offset}, #{size}
+	</select>
+	
+	<delete id="batchDelete">
+		delete from   
+		saf_app_user 
+		where 
+		id in
+		<foreach item="item" collection="params" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+	</delete>
+	
+	<select id="get" resultMap="_resultMap">
+		select i.* from 
+		saf_app_user i 
+		where
+		i.id = #{id}
+	</select>
+	
+	<select id="getByApp" resultMap="_resultMap" parameterType="string">
+		select i.* from 
+		saf_app_user i 
+		where
+		i.app_id = #{appId}
+	</select>
+	
+	<select id="getErpsByAppId" resultType="java.lang.String" parameterType="int">
+		select pin from saf_app_user where app_id=#{appId} group by pin
+	</select>
+	
+</mapper>

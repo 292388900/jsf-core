@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ipd.jsf.worker.log.dao.JsfInsStatDao">
+	<resultMap id="baseResult" type="com.ipd.jsf.worker.domain.JsfInsStat">
+		 <id column="id" property="id" jdbcType="INTEGER" />
+	    <result column="weekend" property="weekend" jdbcType="INTEGER" />
+	    <result column="p_instance" property="pInstance" />
+	    <result column="c_instance" property="cInstance" />
+	    <result column="total_instance" property="totalInstance" />
+	    <result column="ips" property="ipNum" jdbcType="INTEGER" />
+	    <result column="p_ips" property="pIps" jdbcType="INTEGER" />
+	    <result column="c_ips" property="cIps" jdbcType="INTEGER" />
+	    <result column="p_ins_add" property="pinsAdd" />
+	    <result column="c_ins_add" property="cinsAdd" />
+	    <result column="total_ins_add" property="totalinsAdd" />
+	    <result column="total_ip_add" property="totalipAdd" jdbcType="INTEGER" />
+	    <result column="p_ip_add" property="pipAdd" jdbcType="INTEGER" />
+	    <result column="c_ip_add" property="cipAdd" jdbcType="INTEGER" />
+	    <result column="create_date" property="createDate"/>
+	</resultMap>
+
+	<sql id="selectSQL">
+		id, weekend, p_instance, c_instance, total_instance, p_ips, c_ips, ips, p_ins_add, c_ins_add,
+   		 total_ins_add, total_ip_add, p_ip_add, c_ip_add, create_time 
+	</sql>
+	
+   <select id="exist"  resultType="int" parameterType="hashmap">
+        select  count(1) from saf_instance_stat
+         	<where> 
+	        	<if test="weekend != null">
+        		and weekend = #{weekend}
+        	   </if>
+	        	<if test="createTime != null">
+        		and create_time like CONCAT('%', #{createTime}, '%')
+        	   </if>
+        	</where>
+    </select>
+	
+	<select id="getLastWeekStat" resultMap="baseResult">
+		select  <include refid="selectSQL" /> 
+		from saf_instance_stat order by id desc LIMIT 0,1
+	</select>
+	
+	<select id="getByWeek" resultMap="baseResult" parameterType="java.lang.Integer">
+		select  <include refid="selectSQL" /> 
+		from saf_instance_stat where weekend = #{weekend} order by id desc LIMIT 0,1
+	</select>
+	
+  <insert id="insert" parameterType="com.ipd.jsf.worker.domain.JsfInsStat" useGeneratedKeys="true" keyProperty="id" >
+    insert into saf_instance_stat (weekend, p_instance, c_instance,total_instance,p_ips, c_ips, ips, p_ins_add, c_ins_add,
+    total_ins_add, total_ip_add, p_ip_add, c_ip_add, create_time)
+    values (#{weekend,jdbcType=INTEGER}, #{pInstance}, #{cInstance},  #{totalInstance}, #{pIps,jdbcType=INTEGER},#{cIps,jdbcType=INTEGER},
+      #{ipNum,jdbcType=INTEGER}, #{pinsAdd}, #{cinsAdd}, #{totalinsAdd}, #{totalipAdd}, #{pipAdd}, #{cipAdd} ,#{createTime})
+  </insert>
+
+</mapper>

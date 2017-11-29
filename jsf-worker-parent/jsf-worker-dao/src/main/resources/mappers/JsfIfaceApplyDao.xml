@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.worker.dao.JsfIfaceApplyDao">
+
+   <sql id="selectSQL">
+		id, `interfaceName`, department,departmentCode, `ownerUser`, remark, `status`, auditor, auditTime, creator, applyTime
+	</sql>
+
+	<select id="getTobeAudit" resultType="com.ipd.jsf.worker.domain.JsfIfaceApply">
+		select 
+		<include refid="selectSQL" />
+        FROM saf_iface_apply a
+        WHERE
+            a.uid = #{uid} and status=3
+	</select>
+	
+	<update id="batchAudit">
+		update saf_iface_apply
+		<set>
+		    <if test='uid != null and uid != ""'>uid = #{uid},</if>
+		    <if test='status != null and status != ""'>status = #{status},</if>
+		    <if test='auditTime != null'>auditTime = #{auditTime},</if>
+		    <if test='auditor != null and auditor != ""'>auditor = #{auditor},</if>
+		    <if test='rejectReason != null and rejectReason != ""'>rejectReason = #{rejectReason}</if>
+		</set>
+		where interfaceName in 
+		<foreach item="item" collection="ifaces" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+	</update>
+	
+	
+	<select id="batchGetByname" resultType="com.ipd.jsf.worker.domain.JsfIfaceApply">
+		select  <include refid="selectSQL"/> 
+		from saf_iface_apply 
+		where interfaceName in 
+		<foreach item="item" collection="ifaces" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+	</select>
+
+
+	<!--2015.12.22 zcc 以下为worker更新表中departmentCode 字段-->
+	<update id="updateDepartmentCode">
+		update saf_iface_apply
+		<set>
+			<if test="departmentCode != null and departmentCode != ''">departmentCode = #{departmentCode},</if>
+		</set>
+		<!--where interfaceName = #{interfaceName}-->
+		where id = #{id}
+	</update>
+
+	<select id="count" resultType="int">
+		select
+		count(id)
+		from
+		saf_iface_apply
+	</select>
+
+	<select id="list" resultType="com.ipd.jsf.worker.domain.JsfIfaceApply">
+		select
+		<include refid="selectSQL"/>
+		from
+		saf_iface_apply
+		order by id asc
+		limit #{offset}, #{size}
+	</select>
+
+	<select id="listAll" resultType="com.ipd.jsf.worker.domain.JsfIfaceApply">
+		select
+		<include refid="selectSQL"/>
+		from
+		saf_iface_apply
+	</select>
+
+</mapper>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jsf="http://jsf.ipd.com/schema/jsf"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+
+
+
+	                       http://jsf.ipd.com/schema/jsf  http://jsf.ipd.com/schema/jsf/jsf.xsd"
+       default-lazy-init="false" default-autowire="byName">
+
+    <description>Spring公共配置</description>
+
+    <bean id="jsfIfaceServerImpl" class="com.ipd.jsf.worker.service.impl.JsfIfaceServerServiceImpl"></bean>
+    <bean id="instOperateForDeployServiceImpl" class="com.ipd.jsf.deploy.app.impl.InstOperateForDeployServiceImpl"></bean>
+
+    <jsf:server id="jsfServer" protocol="jsf"/>
+
+    <jsf:provider id="instOperateForDeployService" interface="com.ipd.jsf.deploy.app.InstOperateForDeployService"
+                  server="jsfServer"
+                  ref="instOperateForDeployServiceImpl" alias="jsf-deploy">
+        <jsf:parameter key="token" value="#{ globalConfiguration['deploy.provider.token'] }" hide="true"/>
+    </jsf:provider>
+
+
+</beans>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.registry.dao.SysParamDao">
+
+    <resultMap type="SysParam" id="SysParamResultMap">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="param_key" property="key"/>
+        <result column="param_name" property="name"/>
+        <result column="param_value" property="value"/>
+        <result column="param_type" property="type"/>
+        <result column="note" property="note"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, param_key, param_name, param_value, param_type, note
+    </sql>
+
+    <select id="getListByType" resultMap="SysParamResultMap">
+        SELECT DISTINCT
+        <include refid="Base_Column_List"/>
+        FROM saf_param
+        WHERE
+        param_type IN
+        <foreach collection="typeList" item="paramType" index="index" open="(" separator="," close=")">
+            #{paramType}
+        </foreach>
+        ORDER BY id DESC
+    </select>
+
+    <select id="getByTypeAndKey" resultType="java.lang.String">
+        SELECT param_value FROM saf_param WHERE param_type = #{type} and param_key = #{key}
+    </select>
+
+</mapper>

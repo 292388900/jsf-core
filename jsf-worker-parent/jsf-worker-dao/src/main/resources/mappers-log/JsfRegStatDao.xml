@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ipd.jsf.worker.log.dao.JsfRegStatDao">
+	<resultMap type="RegistryStat"  id="_registryStat">
+        <id column="id" property="id"  jdbcType="INTEGER"/>
+        <result column="cluster_id" property="safIndexId" />
+        <result column="ip" property="ip" />
+        <result column="port" property="port" />
+        <result column="connections" property="conns" />
+        <result column="callbacks" property="callbacks" />
+        <result column="create_time" property="createdTime" />
+    </resultMap>
+    
+	<insert id="insert" parameterType="RegistryStat" useGeneratedKeys="true" keyProperty="id">
+		insert into 
+		saf_registry_stat_history  
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			`cluster_id`, 
+			`ip`, 
+			`port`, 
+			`connections`, 
+			`callbacks`, 
+			create_time
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{safIndexId},
+			#{ip},
+			#{port},
+			#{conns},
+			#{callbacks},
+			#{createdTime}
+		</trim>
+	</insert>
+
+	<delete id="deleteByTime">
+        <![CDATA[
+        DELETE FROM saf_registry_stat_history WHERE create_time < #{time} 
+        ]]>
+    </delete>
+</mapper>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ipd.jsf.worker.dao.InfluxdbSyncDao">
+    <resultMap type="InfluxdbSyncTask"  id="_ResultMap">
+        <id column="id" property="id"  jdbcType="INTEGER"/>
+        <result column="from_db" property="from" />
+        <result column="destination_db" property="to" />
+        <result column="status" property="status" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <select id="getInfluxdbSyncTask" resultMap="_ResultMap">
+        select id, from_db, destination_db, status from influxdb_sync_task
+        where status = 3
+    </select>
+
+    <select id="getInfluxdbSyncExpiredTask" resultMap="_ResultMap">
+        <![CDATA[
+        select id, from_db, destination_db, status from influxdb_sync_task
+        where status = 1 and start_time < date_sub(now(),interval 1 day)]]>
+    </select>
+
+    <update id="updateStatus">
+        update influxdb_sync_task set status = #{status}  where id = #{taskId}
+    </update>
+
+    <update id="endTask">
+        update influxdb_sync_task set status = 2, end_time = now()  where id = #{taskId}
+    </update>
+
+
+</mapper>

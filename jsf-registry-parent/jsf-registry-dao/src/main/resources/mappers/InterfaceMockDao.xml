@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.registry.dao.InterfaceMockDao">
+
+    <resultMap type="InterfaceMock"  id="InterfaceResultMap">
+        <result column="interface_name" property="interfaceName" />
+        <result column="method" property="method" />
+        <result column="alias" property="alias" />
+        <result column="ip" property="ip" />
+        <result column="mock_value" property="mockValue" />
+    </resultMap>
+
+    <select id="getListByInterfaceIdList" resultMap="InterfaceResultMap" >
+        <![CDATA[
+        SELECT
+            interface_name, method, alias, ip, mock_value
+        FROM saf_iface_mock
+        WHERE
+        	interface_id IN
+        ]]>
+        <foreach collection="list" item="interfaceId" index="index"  open="(" separator="," close=")">
+            #{interfaceId}
+       	</foreach>
+       	AND mock_open = 1
+    </select>
+
+</mapper>

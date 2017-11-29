@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jsf="http://jsf.ipd.com/schema/jsf"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+       default-lazy-init="true">
+
+
+    <jsf:consumer id="registryService" interface="com.ipd.jsf.service.RegistryService" retries="0"
+                   protocol="jsf" alias="reg" timeout="3000" url="jsf://10.12.165.46:40660/com.ipd.saf.service.RegistryService">
+    </jsf:consumer>
+</beans>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<typeAliases>
+		<typeAlias type="com.ipd.jsf.registry.domain.Server" alias="Server" />
+		<typeAlias type="com.ipd.jsf.registry.domain.ServerAlias" alias="ServerAlias" />
+		<typeAlias type="com.ipd.jsf.registry.domain.ServerSet" alias="ServerSet" />
+		<typeAlias type="com.ipd.jsf.registry.domain.Client" alias="Client" />
+		<typeAlias type="com.ipd.jsf.registry.domain.InterfaceInfo" alias="InterfaceInfo" />
+		<typeAlias type="com.ipd.jsf.registry.domain.IfaceAliasVersion" alias="IfaceAliasVersion" />
+		<typeAlias type="com.ipd.jsf.registry.domain.JsfIns" alias="JsfIns" />
+		<typeAlias type="com.ipd.jsf.registry.domain.SysParam" alias="SysParam" />
+		<typeAlias type="com.ipd.jsf.registry.domain.Room" alias="Room" />
+		<typeAlias type="com.ipd.jsf.registry.domain.InterfaceProperty" alias="InterfaceProperty" />
+		<typeAlias type="com.ipd.jsf.registry.domain.Ipwblist" alias="Ipwblist" />
+		<typeAlias type="com.ipd.jsf.registry.domain.InstanceInterface" alias="InstanceInterface" />
+		<typeAlias type="com.ipd.jsf.registry.domain.ServerRouter" alias="ServerRouter" />
+		<typeAlias type="com.ipd.jsf.registry.domain.App" alias="App" />
+		<typeAlias type="com.ipd.jsf.registry.domain.AppIns" alias="AppIns" />
+		<typeAlias type="com.ipd.jsf.registry.domain.InterfaceMock" alias="InterfaceMock" />
+		<typeAlias type="com.ipd.jsf.registry.domain.AppIface" alias="AppIface" />
+		<typeAlias type="com.ipd.jsf.registry.domain.InsServer" alias="InsServer" />
+	</typeAliases>
+
+</configuration>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.sqllite.test.dao.TestDao">
+
+    <resultMap type="com.ipd.jsf.sqllite.test.domain.TestObj"  id="TestResultMap">
+        <result column="name" property="name" />
+        <result column="occupation" property="occupation" />
+    </resultMap>
+
+	<insert id="create">
+		<![CDATA[
+		create table people (name, occupation)
+		]]>
+	</insert>
+
+    <insert id="insert" parameterType="com.ipd.jsf.sqllite.test.domain.TestObj">
+        <![CDATA[
+        insert into people (name, occupation) values (#{name}, #{occupation});
+        ]]>
+    </insert>
+
+    <select id="list" resultMap="TestResultMap">
+        select name, occupation from people
+    </select>
+</mapper>

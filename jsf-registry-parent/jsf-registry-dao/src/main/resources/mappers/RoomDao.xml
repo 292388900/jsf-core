@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.registry.dao.RoomDao">
+    <resultMap type="Room"  id="RoomResultMap">
+        <id column="id" property="id"  jdbcType="INTEGER"/>
+        <result column="room" property="room" />
+        <result column="ip_section" property="ipSection" />
+        <result column="ip_regular" property="ipRegular" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, room, ip_section, ip_regular
+    </sql>
+
+    <select id="getAll" resultMap="RoomResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM saf_room
+    </select>
+
+</mapper>

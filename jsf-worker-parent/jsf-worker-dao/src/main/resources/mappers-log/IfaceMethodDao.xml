@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.worker.log.dao.IfaceMethodDao">
+
+    <resultMap id="baseResult" type="com.ipd.jsf.worker.domain.MonitorInterface">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="interface_name" property="interfaceName" jdbcType="VARCHAR"/>
+        <result column="method" property="method"/>
+        <result column="create_date" property="createDate" jdbcType="TIMESTAMP"/>
+        <result column="update_date" property="updateDate" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="selectSQL">
+		interface_name, `method`, create_date, update_date
+	</sql>
+
+    <sql id="whereSQL">
+        <where>
+            <if test="params.interfaceName != null and params.interfaceName != ''">
+                interface_name = #{params.interfaceName}
+            </if>
+            <if test="params.method != null and params.method != ''">
+                AND `method` = #{params.method}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findMethodNames" parameterType="java.lang.String" resultType="java.lang.String">
+		select 
+		`method` 
+		from 
+		saf_monitor_interface 
+		where 
+		interface_name=#{interfacename}
+	</select>
+
+    <insert id="insert" parameterType="com.ipd.jsf.worker.domain.MonitorInterface" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into
+        saf_monitor_interface
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            interface_name,
+            `method`,
+            create_date,
+            update_date
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{interfaceName},
+            #{method},
+            #{createDate},
+            #{updateDate},
+        </trim>
+    </insert>
+
+    <update id="update">
+		update
+		saf_monitor_interface
+		set
+		`method` = #{method}, update_date = #{updateDate}
+		where
+		interface_name = #{interfaceName}
+	</update>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+		delete
+		from
+		saf_monitor_interface
+		where
+		id = #{id}
+	</delete>
+
+    <select id="get" resultMap="baseResult">
+        select
+        <include refid="selectSQL"/>
+        from
+        saf_monitor_interface
+        where
+        id = #{id}
+    </select>
+
+    <select id="count" resultType="int">
+        select
+        count(1)
+        from
+        saf_monitor_interface
+        <include refid="whereSQL"/>
+    </select>
+
+    <select id="getMethods" parameterType="java.lang.String" resultType="java.lang.String">
+		select
+		`method`
+		from
+		saf_monitor_interface
+		where
+		interface_name=#{interfacename}
+	</select>
+
+    <select id="getMethodsByInterfaceName" parameterType="java.lang.String" resultMap="baseResult">
+		select
+		id, interface_name, `method`, create_date, update_date
+		from
+		saf_monitor_interface
+		where
+		interface_name=#{interfacename}
+	</select>
+
+    <delete id="deleteByIds" parameterType="java.util.List">
+        delete
+        from
+        saf_monitor_interface
+        where
+        id in
+        <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+    </delete>
+
+</mapper>

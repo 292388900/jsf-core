@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.registry.dao.AppInsDao">
+    <!-- 业务表 -->
+    <resultMap type="AppIns"  id="AppInsResultMap">
+        <id column="jsf_appins_id" property="jsfAppInsId"  jdbcType="INTEGER"/>
+        <result column="app_id" property="appId" />
+        <result column="app_ins_id" property="appInsId" />
+    </resultMap>
+
+    <insert id="create" parameterType="AppIns" useGeneratedKeys="true" keyProperty="jsfAppInsId">
+        <![CDATA[
+        INSERT INTO saf_app_ins (app_ins_id, jsf_app_id, app_id, app_ip, ins_key, src_type, create_time, creator, update_time, modifier)
+        VALUES (
+            #{appInsId},
+            #{jsfAppId},
+            #{appId},
+            #{ip},
+            #{insKey},
+            0,
+            #{createTime},
+            #{creator},
+            #{updateTime},
+            #{creator}
+            )
+        ON DUPLICATE KEY UPDATE
+            ins_key = #{insKey},
+            app_ip = #{ip},
+            creator = #{creator},
+            jsf_app_id = #{jsfAppId},
+            update_time = #{updateTime}
+        ]]>
+    </insert>
+
+    <insert id="update" parameterType="AppIns">
+        <![CDATA[
+        UPDATE saf_app_ins
+        SET
+            ins_key = #{insKey},
+            app_ip = #{ip},
+            modifier = #{modifier},
+            jsf_app_id = #{jsfAppId},
+            update_time = #{updateTime}
+        WHERE
+            app_id = #{appId}
+            AND app_ins_id = #{appInsId}
+        ]]>
+    </insert>
+
+    <select id="getList" resultMap="AppInsResultMap" >
+        <![CDATA[
+        SELECT
+            jsf_appins_id, app_id, app_ins_id
+        FROM saf_app_ins
+        LIMIT #{start}, #{limit}
+        ]]>
+    </select>
+
+    <select id="getListCount" resultType="java.lang.Integer" >
+        <![CDATA[
+        SELECT
+            COUNT(jsf_appins_id)
+        FROM saf_app_ins
+        ]]>
+    </select>
+
+    <select id="get" resultMap="AppInsResultMap" >
+        <![CDATA[
+        SELECT
+            jsf_appins_id, app_id, app_ins_id
+        FROM saf_app_ins
+        WHERE app_id = #{appId} AND app_ins_id = #{appInsId}
+        ]]>
+    </select>
+</mapper>

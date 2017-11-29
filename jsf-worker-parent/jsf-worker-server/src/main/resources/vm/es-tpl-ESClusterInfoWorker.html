@@ -1,0 +1,16 @@
+{
+  "query": {
+    "term": {
+      "clusterName": "%s"
+    }
+  } ,
+  "filter":{
+    "range":{
+      "publishDate":{
+        "from" : "%s"
+      }
+    }
+  },
+  "sort":  {"publishDate": "desc"},
+  "size" : 1
+}

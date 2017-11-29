@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.worker.dao.ServerAliasDao">
+
+    <resultMap type="ServerAlias" id="baseResultMap">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="server_id" property="serverId"/>
+        <result column="interface_id" property="interfaceId"/>
+        <result column="alias_name" property="aliasName"/>
+        <result column="src_type" property="srcType"/>
+        <result column="alias_type" property="aliasType"/>
+        <result column="server_uniquekey" property="serverUnikey"/>
+    </resultMap>
+
+    <sql id="selectSQL">
+        id, server_id, interface_id, alias_name, src_type, alias_type,server_uniquekey
+    </sql>
+
+    <insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+        <selectKey resultType="Integer" order="AFTER">
+            select last_insert_id()
+        </selectKey>
+        insert into
+        saf_server_alias
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            server_id,
+            interface_id,
+            alias_name,
+            src_type,
+            alias_type,
+            server_uniquekey
+        </trim>
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{item.serverId},
+                #{item.interfaceId},
+                #{item.aliasName},
+                #{item.srcType},
+                #{item.aliasType},
+                #{item.serverUnikey}
+            </trim>
+        </foreach>
+    </insert>
+
+    <delete id="batchCancel" parameterType="java.util.List">
+        delete from saf_server_alias where id in
+        <foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="exists" resultMap="baseResultMap" parameterType="ServerAlias">
+        select * from saf_server_alias where server_id = #{serverId} and interface_id = #{interfaceId} and
+        server_uniquekey = #{serverUnikey}
+        <if test='aliasName != null and aliasName != ""'>
+            and alias_name = #{aliasName}
+        </if>
+        <if test='aliasType != -1'>
+            and alias_type = #{aliasType}
+        </if>
+    </select>
+
+    <delete id="deleteServerAliasByServerIds">
+        DELETE FROM saf_server_alias WHERE server_id IN
+        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+            #{item.id}
+        </foreach>
+    </delete>
+
+</mapper>

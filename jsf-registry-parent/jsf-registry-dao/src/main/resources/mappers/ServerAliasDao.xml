@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.registry.dao.ServerAliasDao">
+
+    <resultMap type="ServerAlias"  id="InterfaceAliasServerResultMap">
+        <result column="alias_name" property="targetAlias" />
+    	<result column="server_id" property="id" />
+    	<result column="interface_id" property="interfaceId" />
+    	<result column="alias_type" property="aliasType" />
+    	<result column="server_alias" property="srcAlias" />
+    </resultMap>
+
+    <select id="getAliasServerByInterfaceIdList" resultMap="InterfaceAliasServerResultMap">
+      	SELECT a.alias_name, b.server_id, a.interface_id, a.alias_type
+      	FROM saf_server_alias a, saf_server b
+      	WHERE 
+      	    a.interface_id IN
+        	<foreach collection="list" item="interfaceId" index="index"  open="(" separator="," close=")">
+            #{interfaceId}
+       		</foreach>
+       		AND a.server_uniquekey = b.server_uniquekey
+       		AND b.server_status IN (0, 1)
+       		AND b.opt_type = 1
+    </select>
+
+    <select id="getAliasServersByIfaceIdAliasList" resultMap="InterfaceAliasServerResultMap">
+      	SELECT a.alias_name, b.server_id, a.interface_id, a.alias_type, b.server_alias, b.opt_type
+      	FROM saf_server_alias a, saf_server b
+      	WHERE 
+      	    a.interface_id IN
+        	<foreach collection="list" item="item" index="index"  open="(" separator="," close=")">
+            #{item.interfaceId}
+       		</foreach>
+       		AND a.server_uniquekey = b.server_uniquekey
+       		<!--AND
+       		(
+       		b.server_alias IN
+       		<foreach collection="list" item="item" index="index"  open="(" separator="," close=")">
+            #{item.alias}
+       		</foreach>
+       		OR a.alias_name IN
+       		<foreach collection="list" item="item" index="index"  open="(" separator="," close=")">
+            #{item.alias}
+       		</foreach>
+       		)-->
+    </select>
+</mapper>

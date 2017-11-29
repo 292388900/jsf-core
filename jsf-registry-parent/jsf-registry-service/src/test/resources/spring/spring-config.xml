@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+       default-lazy-init="false" default-autowire="byName">
+
+	<!--全局配置地址 -->
+	<bean id="globalConfiguration" class="org.springframework.beans.factory.config.PropertiesFactoryBean"> 
+		<property name="locations">
+			<list>
+				<!-- 标准配置 -->
+				<value>classpath*:/global.properties</value>
+				<value>classpath*:/inst/${saf_instance}.properties</value><!-- saf_instance在实例启动脚本中设置,在RegistryStartup.java中进行非空判断 -->
+				<value>classpath*:/important.properties</value>
+			</list>
+		</property>
+    </bean>
+
+	<import resource="spring-database.xml" />
+
+</beans>

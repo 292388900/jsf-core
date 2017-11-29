@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx" 
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+	 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd 
+	 http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
+	default-lazy-init="false" default-autowire="byName">
+
+	<description>数据库配置公共配置 </description>
+
+	<!-- 数据源配置,使用应用内的DBCP数据库连接池 -->
+	<bean id="dataSource_log" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<!-- 基本属性 url、user、password -->
+		<property name="driverClassName" value="#{ globalConfiguration['log.jdbc.driver'] }" />
+		<property name="url" value="#{ globalConfiguration['log.jdbc.url'] }" />
+        <property name="connectionProperties" value="#{ globalConfiguration['log.jdbc.connectionProperties'] }" />
+		<property name="username" value="#{ globalConfiguration['log.jdbc.username'] }" />
+		<property name="password" value="#{ globalConfiguration['log.jdbc.password'] }" />
+		<!-- 配置初始化大小、最小、最大 -->
+        <property name="initialSize" value="#{ globalConfiguration['log.jdbc.initialSize'] }" />
+        <property name="minIdle" value="#{ globalConfiguration['log.jdbc.minIdle'] }" />
+		<property name="maxActive" value="#{ globalConfiguration['log.jdbc.maxActive'] }" />
+		<!-- 配置获取连接等待超时的时间 -->
+		<property name="maxWait" value="60000" />
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="#{ globalConfiguration['log.jdbc.timeBetweenEvictionRunsMillis'] }" />
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="#{ globalConfiguration['log.jdbc.minEvictableIdleTimeMillis'] }" />
+		<property name="validationQuery" value="SELECT 'x'" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="20" />
+	</bean>
+
+	<!-- transaction manager, use JtaTransactionManager for global tx -->
+	<bean id="transactionManager_log" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource_log" />
+	</bean>
+
+	<bean id="sqlSessionFactory_log" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource_log" />
+		<property name="configLocation" value="classpath:/spring/mybatis-config.xml" />
+		<property name="mapperLocations">
+			<list>
+				<value>classpath:/mappers-log/*.xml</value>
+				<value>classpath:/worker-commons-mappers-log/*DAO.xml</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="sqlSession_log" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="sqlSessionFactory_log" />
+	</bean>
+
+	<!-- 自动扫描 mapper 接口 -->
+	<bean name="mapperScannerConfigurer_log"  class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.ipd.jsf.worker.log.dao,com.ipd.jsf.worker.common.log.dao" />
+		<property name="sqlSessionFactory" ref="sqlSessionFactory_log"></property>
+	</bean>
+
+	<!-- 使用annotation定义事务 -->
+	<tx:annotation-driven transaction-manager="transactionManager_log"
+		proxy-target-class="true" />
+
+
+</beans>

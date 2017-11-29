@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+	
+	<!-- 控制台输出全部 日志 -->
+	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %p %c - %m%n" />
+		</layout>
+	</appender>
+	
+	
+	<!-- 文件输出全部日志 -->
+	<appender name="allLog-file" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="encoding" value="UTF-8" />
+		<param name="File" value="${log.path}/saf.log" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %p %c - %m%n" />
+		</layout>
+	</appender>
+
+	<!-- web worker 日志 -->
+	<appender name="worker-file" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="encoding" value="UTF-8" />
+		<param name="File" value="${log.path}/saf-worker.log" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %p %c - %m%n" />
+		</layout>
+	</appender>
+	
+	<!-- web pathCache 日志 -->
+	<appender name="web-pathcache-file" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="encoding" value="UTF-8" />
+		<param name="File" value="${log.path}/saf-web-pathcache.log" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %p %c - %m%n" />
+		</layout>
+	</appender>
+	
+	<!-- common pathCache 日志 -->
+	<appender name="common-pathcache-file" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="encoding" value="UTF-8" />
+		<param name="File" value="${log.path}/jsf-common-pathcache.log" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %p %c - %m%n" />
+		</layout>
+	</appender>
+	
+	<!-- common zookeeper日志 -->
+	<appender name="zookeeper-file" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="encoding" value="UTF-8" />
+		<param name="File" value="${log.path}/saf-zookeeper.log" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %p %c - %m%n" />
+		</layout>
+	</appender>
+	
+	<!--struts action 日志 -->
+	<appender name="action-file" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="encoding" value="UTF-8" />
+		<param name="File" value="${log.path}/saf-action.log" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %p %c - %m%n" />
+		</layout>
+	</appender>
+	
+
+	<logger name="com.ipd.jsf.thread">
+		<level value="INFO" />
+		<appender-ref ref="worker-file" />
+	</logger>
+	<logger name="com.ipd.jsf.web">
+		<level value="INFO" />
+		<appender-ref ref="action-file" />
+	</logger>
+	
+	<root>
+		<level value="INFO" />
+		<appender-ref ref="allLog-file" />
+		<appender-ref ref="CONSOLE" />
+<!-- 		<appender-ref ref="DB" /> -->
+	</root> 
+	
+</log4j:configuration>

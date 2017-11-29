@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.registry.dao.InterfaceInfoDao">
+    <resultMap type="InterfaceInfo"  id="InterfaceInfoResultMap">
+        <id column="id" property="interfaceId"  jdbcType="INTEGER"/>
+        <result column="interfaceName" property="interfaceName" />
+        <result column="createdTime" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="cfg_update_time" property="configUpdateTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        a.id, a.interfaceName
+    </sql>
+
+    <select id="getListForProvider" resultMap="InterfaceInfoResultMap">
+        SELECT
+        	a.id, a.interfaceName, a.createdTime, b.update_time
+        FROM saf_interface a LEFT JOIN saf_iface_version b ON a.id = b.interface_id
+        WHERE
+            a.valid = 1 
+    </select>
+
+    <select id="getChangeListByUpdateTime" resultMap="InterfaceInfoResultMap">
+        <![CDATA[
+        SELECT
+        	a.id, a.interfaceName, a.createdTime, b.update_time
+        FROM saf_interface a INNER JOIN saf_iface_version b ON a.id = b.interface_id
+        WHERE
+            a.valid = 1 AND b.update_time >= #{time}
+        ]]>
+    </select>
+
+    <select id="getChangeListByConfigUpdateTime" resultMap="InterfaceInfoResultMap">
+        <![CDATA[
+        SELECT
+        	a.id, a.interfaceName, a.createdTime, b.cfg_update_time
+        FROM saf_interface a INNER JOIN saf_iface_version b ON a.id = b.interface_id
+        WHERE
+            a.valid = 1 AND b.cfg_update_time >= #{time}
+        ]]>
+    </select>
+
+    <select id="getByInterfaceName" resultMap="InterfaceInfoResultMap">
+        SELECT
+            a.id, a.interfaceName, a.createdTime
+        FROM saf_interface a
+        WHERE
+            a.interfaceName = #{interfaceName} AND a.valid = 1
+    </select>
+
+    <select id="getByIdListForProvider" resultMap="InterfaceInfoResultMap">
+        SELECT
+        	a.id, a.interfaceName, a.createdTime, b.update_time
+        FROM saf_interface a INNER JOIN saf_iface_version b ON a.id = b.interface_id
+        WHERE
+        	b.interface_id IN
+        <foreach collection="list" item="interfaceId" index="index"  open="(" separator="," close=")">
+            #{interfaceId}
+       	</foreach>
+            AND a.valid = 1 
+    </select>
+
+    <select id="getByIdListForConfig" resultMap="InterfaceInfoResultMap">
+        SELECT
+        	a.id, a.interfaceName, a.createdTime, b.cfg_update_time
+        FROM saf_interface a INNER JOIN saf_iface_version b ON a.id = b.interface_id
+        WHERE
+        	b.interface_id IN
+        <foreach collection="list" item="interfaceId" index="index"  open="(" separator="," close=")">
+            #{interfaceId}
+       	</foreach>
+            AND a.valid = 1 
+    </select>
+
+	<select id="getInvalidList" resultMap="InterfaceInfoResultMap">
+	    SELECT
+        <include refid="Base_Column_List" />
+        FROM saf_interface a
+        WHERE
+            a.valid = 0
+	</select>
+
+	<select id="getAllValidList" resultMap="InterfaceInfoResultMap">
+        SELECT
+        	a.id, a.interfaceName, a.createdTime
+        FROM saf_interface a
+        WHERE
+            a.valid = 1 
+    </select>
+
+    <select id="getListByIds" resultMap="InterfaceInfoResultMap">
+        <![CDATA[
+        SELECT
+        	a.id, a.interfaceName, a.createdTime
+        FROM saf_interface a
+        WHERE
+            a.valid = 1 AND a.id IN
+        ]]>
+        <foreach item="item" collection="ids" open="(" separator="," close=")">
+            #{item}
+        </foreach> 
+    </select>
+
+</mapper>

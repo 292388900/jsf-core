@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.worker.dao.InterfacePropertyDao">
+
+    <resultMap type="InterfaceProperty"  id="InterfaceResultMap">
+        <result column="interface_name" property="interfaceName" />
+        <result column="param_key" property="paramKey" />
+        <result column="param_value" property="paramValue" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <select id="getList" resultMap="InterfaceResultMap" >
+        <![CDATA[
+        SELECT
+            interface_name, param_key, param_value
+        FROM saf_interface_property
+        WHERE
+       	    param_type = #{paramType}
+        ]]>
+    </select>
+
+    <insert id="addCallLimitProperty">
+        insert into
+        saf_interface_property
+        (
+            `interface_id`,
+            `interface_name`,
+            `param_key`,
+            param_value,
+            param_type,
+            update_time
+        )
+        VALUES (
+            #{interfaceId},
+            #{interfaceName},
+            #{paramKey},
+            #{paramValue},
+            1,
+            #{updateTime}
+        )
+    </insert>
+
+    <select id="getCallLimitProperty" resultMap="InterfaceResultMap" >
+        <![CDATA[
+        SELECT
+            interface_name, param_key, param_value
+        FROM saf_interface_property
+        WHERE
+       	    param_type= 1 and param_key = #{paramKey} AND interface_name = #{interfaceName}
+        ]]>
+    </select>
+
+    <update id="updateCallLimitProperty">
+        update
+        saf_interface_property
+        <set>
+            param_value=#{paramValue},
+            update_time = #{updateTime}
+        </set>
+        where
+        interface_name = #{interfaceName} and param_type= 1 and param_key = #{paramKey}
+    </update>
+
+    <delete id="deleteCallLimitProperty">
+        delete  from
+        saf_interface_property
+        where
+        param_type= 1 and param_key = #{paramKey} AND interface_name = #{interfaceName}
+    </delete>
+
+</mapper>

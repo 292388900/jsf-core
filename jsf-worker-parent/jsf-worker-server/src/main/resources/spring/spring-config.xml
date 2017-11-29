@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	                       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+	                       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+	                       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd"
+       default-lazy-init="false" default-autowire="byName">
+
+    <description>Spring公共配置</description>
+    <util:properties id="workerConfig" location="classpath:worker.properties"/>
+
+    <!--全局配置地址 -->
+    <bean id="globalConfiguration" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="locations">
+            <list>
+                <!-- 标准配置 -->
+                <value>classpath*:/global.properties</value>
+                <value>classpath*:/important.properties</value>
+            </list>
+        </property>
+    </bean>
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+        <property name="properties" ref="globalConfiguration"/>
+    </bean>
+
+    <import resource="classpath:/db/spring-database.xml"/>
+    <import resource="classpath:/db/spring-database-log.xml"/>
+
+
+    <context:component-scan
+            base-package="com.ipd.jsf.worker.thread.audit,com.ipd.jsf.worker.common,com.ipd.jsf.worker.service,com.ipd.jsf.worker.service.impl,com.ipd.jsf.worker.manager.impl,com.ipd.jsf.worker.common.service.impl,com.ipd.jsf.worker.influxdb,com.ipd.jsf.version.common.service"/>
+    <aop:aspectj-autoproxy expose-proxy="true"/>
+    <context:annotation-config/>
+    <bean id="checkDBWorker" class="com.ipd.jsf.worker.thread.checkdb.CheckDBWorker" init-method="start">
+        <property name="interval" value="15"/>
+        <property name="umpDBKey" value="#{ globalConfiguration['ump.db.alive.key'] }"/>
+        <property name="workerName" value="worker"/>
+    </bean>
+
+
+    <bean id="scanNodeStatusWorker" class="com.ipd.jsf.worker.thread.scanstatus.ScanNodeStatusWorker">
+        <property name="workerType" value="LangFangScanNodeStatusWorker"></property>
+    </bean>
+
+    <bean id="aliasVersionUpdateWorker" class="com.ipd.jsf.worker.thread.scanstatus.AliasVersionUpdateWorker"/>
+    <bean id="clearLogWorker" class="com.ipd.jsf.worker.thread.logclear.LogClearWorker"/>
+
+    <bean id="ifaceOnoffStatAlarmWorker" class="com.ipd.jsf.worker.thread.onoff.IfaceOnoffStatAlarmWorker"/>
+    <!-- 扫描注册中心状态，暂时不开放
+    <bean id="registryStatusWorker" class="com.ipd.jsf.worker.thread.registry.RegistryStatusWorker"/> 
+    -->
+    <bean id="jsfIfaceInsStatWorker" class="com.ipd.jsf.worker.thread.jsfins.JsfIfaceInsStatWorker"/>
+    <bean id="jsfInsStatWorker" class="com.ipd.jsf.worker.thread.jsfins.JsfInsStatWorker"/>
+    <bean id="jsfVerCheckWorker" class="com.ipd.jsf.worker.thread.jsfins.JsfVerCheckWorker"/>
+
+    <bean id="jsfCrossLangCheckWorker" class="com.ipd.jsf.worker.thread.jsfins.JsfCrossLangCheckWorker"/>
+    <bean id="receiveMailWorker" class="com.ipd.jsf.worker.thread.mail.ReceiveMailWorker"/>
+
+    <!--add by  2015.8.17  -->
+    <bean id="alarmStatisticsWorker" class="com.ipd.jsf.worker.thread.alarm.AlarmStatisticsWorker"/>
+
+    <bean id="userResourceCheckWorker" class="com.ipd.jsf.worker.thread.onlyone.UserResourceCheckWorker"/>
+
+    <!-- 获取JSF方法列表，并更新DB  -->
+    <bean id="initJsfMethodWorker" class="com.ipd.jsf.worker.thread.jsfmethod.InitJsfMethodWorker"/>
+
+    <bean id="ifaceProviderAndConsumerSumWorker" class="com.ipd.jsf.worker.thread.stat.IfaceProviderAndConsumerSumWorker"/>
+
+    <!--2016.4.18 定时清理没有用的过期alias-->
+    <bean id="deleteRedundantAliasWorker" class="com.ipd.jsf.worker.thread.alias.DeleteRedundantAliasWorker"/>
+
+    <!--2016.5.10 上下线统计次数报警worker，次数超过阀值发送报警短信-->
+    <bean id="onOffStatisticsAlarmWorker" class="com.ipd.jsf.worker.thread.alarm.OnOffStatisticsAlarmWorker"/>
+
+    <bean id="indexAvailabilityCheckWorker" class="com.ipd.jsf.worker.thread.healthmonitor.IndexAvailabilityCheckWorker">
+        <property name="workerType" value="LangFangIndexAvailabilityCheckWorker"></property>
+    </bean>
+
+    <bean id="registryAvailabilityCheckWorker" class="com.ipd.jsf.worker.thread.healthmonitor.RegistryAvailabilityCheckWorker">
+        <property name="workerType" value="LangFangRegistryAvailabilityCheckWorker"></property>
+    </bean>
+
+    <!-- 2017.5.10 为去除saf_app_ins表依赖，同步数据到saf_ins_hb表的worker -->
+    <bean id="jsfUpdAppForJsfInsByAppInsWorker" class="com.ipd.jsf.worker.thread.jsfins.JsfUpdAppForJsfInsByAppIns"/>
+
+	<import resource="classpath:/spring/spring-jsf.xml"/>
+</beans>

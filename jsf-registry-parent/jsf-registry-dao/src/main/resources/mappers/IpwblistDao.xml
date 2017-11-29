@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.registry.dao.IpwblistDao">
+    <resultMap type="Ipwblist"  id="IpwblistResultMap">
+        <id column="id" property="id"  jdbcType="INTEGER"/>
+        <result column="interfaceName" property="interfaceName" />
+        <result column="alias_name" property="alias" />
+        <result column="ip_addr" property="ip" />
+        <result column="ip_regular" property="regular" />
+        <result column="wb_type" property="wbType" />
+        <result column="valid" property="valid" />
+    </resultMap>
+
+    <select id="getListByInterfaceIdList" resultMap="IpwblistResultMap">
+    	<![CDATA[
+        SELECT
+            a.id, b.interfaceName, a.alias_name, a.ip_addr, a.ip_regular, a.wb_type, a.valid
+        FROM saf_ipwb a, saf_interface b
+        WHERE
+        	a.interface_id IN
+        ]]>
+        <foreach collection="list" item="interfaceId" index="index"  open="(" separator="," close=")">
+            #{interfaceId}
+       	</foreach>
+       	    AND a.pc_type = 1
+            AND a.interface_id = b.id
+            AND a.valid = 1
+    </select>
+
+</mapper>

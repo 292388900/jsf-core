@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.worker.log.dao.ServiceTraceLogDao">
+
+    <insert id="create" parameterType="java.util.List">
+        <![CDATA[
+        INSERT INTO saf_service_tracelog (interfaceName, alias, ip, port, protocol, pid, safVer, pcType, onoffType, eventTime, creator, createdTime)
+        VALUES  (
+        ]]>
+        <foreach item="item" index="index" collection="list" open="" close=")" separator="),(">
+            #{item.interfaceName},
+            #{item.alias},
+            #{item.ip},
+            #{item.port},
+            #{item.protocol},
+            #{item.pid},
+            #{item.safVer},
+            #{item.pcType},
+            #{item.onoffType},
+            #{item.eventTime},
+            #{item.creator},
+            CURRENT_TIMESTAMP()
+		</foreach>
+    </insert>
+
+    <delete id="deleteByTime">
+        <![CDATA[
+        DELETE FROM saf_service_tracelog WHERE createdTime < #{time} 
+        ]]>
+    </delete>
+
+    <select id="getListByTime" resultType="com.ipd.jsf.worker.domain.ServiceTraceLog">
+    	SELECT interfaceName, alias, ip, port, protocol, pid, safVer, pcType, onoffType, eventTime, creator, createdTime
+    	FROM saf_service_tracelog
+    	WHERE 
+    	    pcType = #{pcType}
+    	    AND eventTime BETWEEN #{startTime} AND #{endTime}
+    	    <if test="interfaceName != null and interfaceName != ''">
+    	    AND interfaceName = #{interfaceName}
+    	    </if>
+    </select>
+
+    <select id="statistics" resultType="com.ipd.jsf.worker.domain.ServiceTraceLog">
+        select `interfaceName`, `ip`,`port`, `pid`, onoffType, eventTime, count(1) as count , createdTime
+        from
+        saf_service_tracelog
+        WHERE
+        eventTime BETWEEN #{startTime} AND #{endTime}
+        group by `interfaceName`, `ip`,`port`, onoffType order by count desc
+        limit #{offset}, #{size}
+    </select>
+
+    <!--取最大于某一阀值的记录-->
+    <select id="getTopRecords" resultType="com.ipd.jsf.worker.domain.ServiceTraceLog">
+        select `interfaceName`, `ip`,`port`, `pid`, onoffType, eventTime, count(1) as count , createdTime
+        from
+        saf_service_tracelog
+        WHERE
+        eventTime BETWEEN #{startTime} AND #{endTime}
+        group by `interfaceName`, `ip`,`port`, onoffType
+        having count >= #{maxCount}
+    </select>
+
+    <!--取最大的一记录数-->
+    <select id="getMaxCount" resultType="int">
+        select max(count) from (
+        select count(1) as count
+        from
+        saf_service_tracelog
+        WHERE
+        eventTime BETWEEN #{startTime} AND #{endTime}
+        group by `interfaceName`, `ip`,`port`, onoffType ) A
+    </select>
+
+</mapper>

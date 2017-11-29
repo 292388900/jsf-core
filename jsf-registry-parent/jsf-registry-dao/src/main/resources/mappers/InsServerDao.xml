@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.registry.dao.InsServerDao">
+
+    <insert id="create" parameterType="InsServer">
+        <![CDATA[
+        INSERT INTO jsf_ins_server (ins_key, server_uniquekey, create_time, update_time)
+        VALUES (
+            #{insKey},
+        	#{serverUniqkey},
+            #{createTime},
+            #{createTime}
+            )
+        ON DUPLICATE KEY UPDATE
+            update_time = #{createTime}
+        ]]>
+    </insert>
+</mapper>

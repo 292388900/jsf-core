@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.worker.log.dao.JsfRegAddrDao">
+
+    <resultMap type="JsfRegAddr" id="_resultMap">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="ip" property="ip"/>
+        <result column="port" property="port"/>
+        <result column="protocol" property="protocol"/>
+        <result column="state" property="state"/>
+        <result column="note" property="note"/>
+        <result column="room" property="room"/>
+        <result column="conns" property="conns"/>
+        <result column="requests" property="requests"/>
+        <result column="callbacks" property="callbacks"/>
+        <result column="saf_index_id" property="safIndexId"/>
+        <result column="isValid" property="isValid"/>
+        <result column="last_check_time" property="lastCheckTime"/>
+        <result column="create_time" property="createdTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="logicDelFlag" property="logic_del_flag"/>
+    </resultMap>
+
+    <update id="updateByWorker">
+        UPDATE
+        saf_registry_addr
+        <set>
+            `state`=#{state},
+            last_check_time=#{lastCheckTime},
+            `conns`=#{conns},
+            `requests`=#{requests},
+            `callbacks`=#{callbacks}
+        </set>
+        WHERE ip=#{ip} AND port=#{port}
+    </update>
+
+    <update id="updateStasus">
+        UPDATE
+        saf_registry_addr
+        <set>
+            `state`=#{state},
+            last_check_time=#{lastCheckTime}
+        </set>
+        WHERE ip=#{ip} AND port=#{port}
+    </update>
+
+    <select id="listAll" resultMap="_resultMap">
+		SELECT 
+		    id,ip,port,protocol,state,note,room,conns,requests,callbacks,saf_index_id,isValid,last_check_time,create_time,update_time 
+		FROM 
+		saf_registry_addr 
+	</select>
+
+    <select id="getValidList" resultMap="_resultMap">
+		SELECT 
+		    id,ip,port,protocol,state,note,room,conns,requests,callbacks,saf_index_id,isValid,last_check_time,create_time,update_time 
+		FROM 
+		saf_registry_addr 
+		WHERE 
+		    isValid = 1
+	</select>
+
+    <select id="getUnCheckList" resultMap="_resultMap">
+		SELECT
+		id,ip,port,protocol,state,note,room,conns,requests,callbacks,saf_index_id,isValid,last_check_time,create_time,update_time
+		FROM
+		saf_registry_addr
+		WHERE
+		logic_del_flag = 0
+	</select>
+
+</mapper>

@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.worker.dao.JsfInsDao">
+    <!-- 业务表 -->
+    <resultMap type="JsfIns"  id="InstanceResultMap">
+        <result column="ins_key" property="insKey" />
+        <result column="ins_ip" property="ip" />
+        <result column="ins_pid" property="pid" />
+        <result column="hb_time" property="hb" />
+        <result column="ins_status" property="status" />
+        <result column="start_time" property="startTime" />
+        <result column="reg_ip" property="regIp" />
+        <result column="saf_ver" property="safVer" />
+        <result column="language" property="language" />
+    </resultMap>
+
+    <resultMap type="InstanceInterface"  id="InstanceInterfaceResultMap">
+        <result column="ins_key" property="insKey" />
+        <result column="interface_id" property="interfaceId" />
+        <result column="server_status" property="serverStatus" />
+    </resultMap>
+
+	<resultMap type="JsfApp"  id="_AppResultMap">
+        <result column="app_id" property="appId" />
+        <result column="app_name" property="appName" />
+    </resultMap>
+
+    <resultMap type="com.ipd.jsf.worker.domain.LogicDelAlarmInfo"  id="logicDelAlarmInfo">
+        <result column="ins_room" property="insRoom" />
+        <result column="app_id" property="appId" />
+        <result column="app_name" property="appName" />
+        <result column="ins_count" property="count" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        ins_key, ins_ip, ins_pid, hb_time, ins_status, start_time, reg_ip, saf_ver, language
+    </sql>
+
+    <update id="batchUpdateStatusOnline">
+        <![CDATA[
+        UPDATE saf_ins_hb SET
+		    ins_status = (CASE WHEN ins_status = 2 OR ins_status = 3 THEN 2 
+				       WHEN ins_status = 0 OR ins_status = 1 THEN 1
+				       ELSE 1
+				       END),
+			del_yn = 0
+        WHERE ins_key IN
+        ]]>
+	        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+				#{item.insKey}
+			</foreach>
+        <![CDATA[
+             AND ins_status IN (0, 3)
+        ]]>
+    </update>
+
+    <update id="batchUpdateStatusOffline">
+        <![CDATA[
+        UPDATE saf_ins_hb SET
+		    ins_status = (CASE WHEN ins_status = 2 OR ins_status = 3 THEN 3
+				       WHEN ins_status = 0 OR ins_status = 1 THEN 0
+				       ELSE 0
+				       END)
+        WHERE ins_key IN
+        ]]>
+	        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+				#{item.insKey}
+			</foreach>
+        <![CDATA[
+            AND ins_status IN (1, 2)
+        ]]>
+    </update>
+
+    <delete id="batchDeleteByInsKey">
+        <![CDATA[
+        DELETE FROM saf_ins_hb
+        WHERE
+            ins_key IN 
+        ]]>
+        <foreach item="item" index="index" collection="insKeyList" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		AND del_yn = 1
+    </delete>
+
+    <update id="batchUpdateDelYn">
+        <![CDATA[
+        UPDATE saf_ins_hb
+        SET
+            del_yn = 1
+        WHERE
+            ins_key IN 
+        ]]>
+        <foreach item="item" index="index" collection="insKeyList" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+    </update>
+
+    <select id="getOnlineInsBeforeTime" resultMap="InstanceResultMap">
+        SELECT
+            <include refid="Base_Column_List" />
+        FROM saf_ins_hb
+        WHERE
+        <![CDATA[
+            ins_status IN (1, 2)
+            AND del_yn = 0
+            AND hb_time BETWEEN '2000-01-01 00:00:00' AND #{time} 
+        ]]>
+        <if test="registryList != null">
+            AND reg_ip NOT IN
+            <foreach item="item" index="index" collection="registryList" open="(" separator="," close=")">
+			#{item}
+		    </foreach>
+        </if>
+    </select>
+
+    <select id="getOfflineInsAfterTime" resultMap="InstanceResultMap">
+        SELECT
+            <include refid="Base_Column_List" />
+        FROM saf_ins_hb
+        WHERE
+        <![CDATA[
+            del_yn = 0
+            AND ins_status IN (0, 3)
+            AND hb_time >= #{time}
+        ]]>
+    </select>
+    
+    <select id="getJsfInsByInsKey" resultMap="InstanceResultMap">
+        SELECT
+            <include refid="Base_Column_List" />
+        FROM saf_ins_hb
+        WHERE ins_key=#{insKey}
+    </select>
+
+    <select id="getOfflineInsBeforeTime" resultMap="InstanceResultMap">
+        SELECT
+            <include refid="Base_Column_List" />
+        FROM saf_ins_hb
+        WHERE
+        <![CDATA[
+            del_yn = 0
+            AND ins_status IN (0, 3)
+            AND hb_time BETWEEN '2000-01-01 00:00:00' AND #{time} 
+        ]]>
+        <if test="registryList != null">
+            AND reg_ip NOT IN
+            <foreach item="item" index="index" collection="registryList" open="(" separator="," close=")">
+			#{item}
+		    </foreach>
+        </if>
+    </select>
+
+    <select id="getDelYnInsBeforeTime" resultMap="InstanceResultMap">
+        SELECT
+            <include refid="Base_Column_List" />
+        FROM saf_ins_hb
+        WHERE
+        <![CDATA[
+            del_yn = 1
+            AND hb_time BETWEEN '2000-01-01 00:00:00' AND #{time} 
+            LIMIT 100
+        ]]>
+    </select>
+
+    <select id="getInsListByKey" resultMap="InstanceResultMap">
+        SELECT
+            <include refid="Base_Column_List" />
+        FROM saf_ins_hb
+        WHERE ins_key IN
+	        <foreach item="insKey" index="index" collection="list" open="(" separator="," close=")">
+				#{insKey}
+			</foreach>
+    </select>
+
+    <select id="getInsIfaceList" resultMap="InstanceInterfaceResultMap">
+        <![CDATA[
+        SELECT ins_key, interface_id, server_status
+        FROM saf_server 
+        LIMIT #{start}, #{limit}
+        ]]>
+    </select>
+
+    <select id="getInsIfaceListCount" resultType="java.lang.Integer">
+        <![CDATA[
+        SELECT COUNT(1) FROM saf_server 
+        ]]>
+    </select>
+    
+    <select id="getAppIdByInsKey" resultType="java.lang.Integer">
+		select a.app_id from saf_app a
+		left join saf_ins_hb i on i.app_id=a.app_id
+		where i.ins_key = #{insKey}
+    </select>
+
+    <select id="getAppByInsKey" resultMap="_AppResultMap">
+		SELECT app.app_id, app.app_name	FROM saf_app app, saf_ins_hb i
+		WHERE app.app_id=i.app_id  AND i.ins_key = #{insKey}
+    </select>
+
+	<select id="getInsKeys" resultType="java.lang.String">
+		select ins_key from saf_ins_hb
+		 where ins_pid = #{pid}
+		  AND app_id = #{appId}
+		  and app_ins_id=#{appInsId}
+		  AND ins_status IN (0, 1)
+	</select>
+
+    <select id="countLogicDelInsNodes" resultMap="logicDelAlarmInfo" parameterType="java.util.Map">
+        select i.ins_room, app.app_id, app.app_name, count(DISTINCT i.ins_key) as ins_count from saf_ins_hb i
+        left join saf_app app on app.app_id = i.app_id
+        inner join saf_server s on s.ins_key = i.ins_key
+        <where>
+            i.ins_status = #{status} and s.server_status = #{status}
+            <if test='insRoom != null and insRoom !=""'>
+                and i.ins_room = #{insRoom}
+            </if>
+            <if test="startTime != null">
+                <![CDATA[ and i.hb_time >= #{startTime} ]]>
+            </if>
+            <if test="endTime != null">
+                <![CDATA[ and i.hb_time <= #{endTime} ]]>
+            </if>
+        </where>
+        group by i.ins_room, app.app_id, app.app_name
+    </select>
+
+    <select id="countInsNodes" resultMap="logicDelAlarmInfo" parameterType="java.util.Map">
+        select i.ins_room, count(DISTINCT i.ins_key) as ins_count from saf_ins_hb i
+        inner join saf_server s on s.ins_key = i.ins_key
+        <where>
+            i.ins_status in
+            <foreach item="item" collection="status" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            and s.server_status in
+            <foreach item="item" collection="status" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            <if test='insRoom != null and insRoom !=""'>
+                and i.ins_room = #{insRoom}
+            </if>
+            <if test="startTime != null">
+                <![CDATA[ and i.hb_time >= #{startTime} ]]>
+            </if>
+            <if test="endTime != null">
+                <![CDATA[ and i.hb_time <= #{endTime} ]]>
+            </if>
+        </where>
+        group by i.ins_room
+    </select>
+
+    <update id="updInsAppIdAndAppInsId">
+        UPDATE saf_ins_hb set app_id=#{appId},app_ins_id=#{appInsId} where ins_key=#{insKey}
+    </update>
+</mapper>

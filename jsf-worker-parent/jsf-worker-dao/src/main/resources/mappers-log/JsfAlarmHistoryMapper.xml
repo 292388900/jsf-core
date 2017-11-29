@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ipd.jsf.worker.log.dao.JsfAlarmHistoryDao" >
+  <resultMap id="BaseResultMap" type="com.ipd.jsf.worker.domain.JsfAlarmHistory" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="alarm_key" property="alarmKey" jdbcType="VARCHAR" />
+    <result column="interface_name" property="interfaceName" jdbcType="VARCHAR" />
+    <result column="method_name" property="methodName" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="erps" property="erps" jdbcType="VARCHAR" />
+    <result column="alarm_type" property="alarmType" jdbcType="TINYINT" />
+    <result column="is_alarmed" property="isAlarmed" jdbcType="TINYINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="alarm_time" property="alarmTime" jdbcType="TIMESTAMP" />
+    <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+    <result column="extend_key1" property="extendKey1" jdbcType="VARCHAR" />
+    <result column="extend_key2" property="extendKey2" jdbcType="VARCHAR" />
+    <result column="reg_ip" property="regIp" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, alarm_key, interface_name, method_name, content, erps, alarm_type, 
+    is_alarmed, create_time, alarm_time, remarks, extend_key1, extend_key2, reg_ip
+  </sql>
+  
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from saf_alarm_history
+    where id = #{id}
+  </select>
+  
+  <select id="getNewLastTime" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from saf_alarm_history
+    where id = (select max(id) from saf_alarm_history where is_alarmed=1)
+  </select>
+  
+  
+  <select id="selectByTime" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from saf_alarm_history
+    where create_time > #{createTime} AND is_alarmed = 0
+  </select>
+
+  <select id="countByTime" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from saf_alarm_history
+    where create_time > #{createTime} and is_alarmed = #{isAlarmed}
+    order by create_time desc
+  </select>
+  
+  
+  <insert id="insert" parameterType="com.ipd.jsf.worker.domain.JsfAlarmHistory" useGeneratedKeys="true" keyProperty="id" >
+    insert into saf_alarm_history (alarm_key, interface_name, method_name, 
+      content, erps, alarm_type, is_alarmed, create_time, 
+      alarm_time, remarks, extend_key1, extend_key2, reg_ip)
+    values (#{alarmKey}, #{interfaceName}, #{methodName}, 
+      #{content}, #{erps}, #{alarmType}, #{isAlarmed}, #{createTime}, 
+      #{alarmTime}, #{remarks}, #{extendKey1}, #{extendKey2}, #{regIp})
+  </insert>
+  <update id="updateByPrimaryKey" >
+    update saf_alarm_history
+    set 
+      is_alarmed = #{isAlarmed},
+      alarm_time = #{alarmTime},
+      remarks = #{remarks}
+    where id = #{id}
+  </update>
+
+  <insert id="batchInsert" parameterType="java.util.List">
+      <![CDATA[
+      INSERT INTO saf_alarm_history (alarm_key, interface_name, method_name, content, erps, alarm_type, create_time, extend_key1, extend_key2,reg_ip)
+      VALUES
+      ]]>
+      <foreach item="item" index="index" collection="list" open="(" close=")" separator="),(">
+          #{item.alarmKey},
+          #{item.interfaceName},
+          #{item.methodName},
+          #{item.content},
+          #{item.erps},
+          #{item.alarmType},
+          #{item.createTime},
+          #{item.extendKey1},
+          #{item.extendKey2},
+          #{item.regIp}
+      </foreach>
+  </insert>
+
+  <select id="getAlarmHistoryList" resultMap="BaseResultMap" >
+    SELECT 
+    <include refid="Base_Column_List" />
+    FROM saf_alarm_history
+    WHERE create_time > #{createTime} AND alarm_type = #{alarmType}
+    ORDER BY create_time DESC
+  </select>
+  
+  <select id="getListByTime" resultType="int">
+    SELECT count(1) FROM saf_alarm_history
+    WHERE create_time &gt;= #{startTime} and create_time &lt;= #{endTime} and is_alarmed=1 and alarm_type=#{alarmType}
+    ORDER BY id asc
+  </select>
+</mapper>

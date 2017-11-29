@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ipd.jsf.worker.dao.JsfDepartmentUpdateDao" >
+<!--  <resultMap id="baseColumn" type="Department">
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="departmentCode" property="departmentCode"/>
+    <result column="departmentName" property="departmentName"/>
+    <result column="departmentLevel" property="departmentLevel" jdbcType="INTEGER" />
+    <result column="parentCode" property="parentCode"/>
+    <result column="synchro"  property="synchro" jdbcType="INTEGER"/>
+    <result column="createdTime"  property="createdTime"/>
+    <result column="updateTime"  property="updateTime"/>
+  </resultMap>-->
+
+  <sql id="selectSQL">
+    departmentCode, departmentName, departmentLevel, parentCode, synchro, createdTime, updateTime
+  </sql>
+
+  <!-- 根据部门编号查询部门  -->
+  <select id="getDepartmentByCode" resultType="com.ipd.jsf.worker.domain.Department" >
+    select departmentCode as departmentCode,departmentName as departmentName, departmentLevel as departmentLevel, parentCode as parentCode, synchro as synchro, createdTime as createdTime, updateTime as updateTime
+    from saf_department
+    where departmentCode = #{departmentCode}
+  </select>
+
+
+    <!-- 根据部门名字查询部门  -->
+    <select id="getDepartmentByName" resultType="com.ipd.jsf.worker.domain.Department" >
+        select departmentCode as departmentCode,departmentName as departmentName, departmentLevel as departmentLevel, parentCode as parentCode, synchro as synchro, createdTime as createdTime, updateTime as updateTime
+        from saf_department
+        where departmentName = #{departmentName}
+    </select>
+
+  <!-- 查询一级部门  -->
+  <select id="getFirstLevelDepartment" resultType="com.ipd.jsf.worker.domain.Department" >
+    select departmentCode as departmentCode,departmentName as departmentName, departmentLevel as departmentLevel, parentCode as parentCode, synchro as synchro, createdTime as createdTime, updateTime as updateTime
+    from saf_department
+    where departmentLevel = 1
+  </select>
+
+    <!-- 根据部门级别查询部门  -->
+    <select id="getDepartmentByLevel" resultType="com.ipd.jsf.worker.domain.Department" >
+        select departmentCode as departmentCode,departmentName as departmentName, departmentLevel as departmentLevel, parentCode as parentCode, synchro as synchro, createdTime as createdTime, updateTime as updateTime
+        from saf_department
+        where departmentLevel = #{departmentLevel}
+    </select>
+
+  <insert id="insert" parameterType="com.ipd.jsf.worker.domain.Department" useGeneratedKeys="true" keyProperty="id" >
+    insert into saf_department (departmentCode, departmentName, departmentLevel, parentCode,synchro, createdTime, updateTime)
+    values (#{departmentCode},#{departmentName}, #{departmentLevel},#{parentCode}, #{synchro}, CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP())
+  </insert>
+
+  <!-- 这会更改带synchro标志位的数据 考虑是否能加一个where-->
+  <insert id="insertOrUpdate" parameterType="com.ipd.jsf.worker.domain.Department" useGeneratedKeys="true">   /*keyProperty=""*/
+    <![CDATA[
+        INSERT INTO saf_department (departmentCode, departmentName, departmentLevel, parentCode,synchro,createdTime, updateTime)
+        VALUES (
+            #{departmentCode},
+            #{departmentName},
+            #{departmentLevel},
+            #{parentCode},
+            #{synchro},
+            CURRENT_TIMESTAMP(),
+            CURRENT_TIMESTAMP()
+            )
+        ON DUPLICATE KEY UPDATE
+            departmentName = #{departmentName},
+            departmentLevel = #{departmentLevel},
+            parentCode = #{parentCode},
+            updateTime = CURRENT_TIMESTAMP()
+        ]]>
+  </insert>
+
+  <update id="update">
+    UPDATE saf_department
+    SET
+    departmentName= #{departmentName},
+	departmentLevel= #{departmentLevel},
+	parentCode = #{parentCode},
+    synchro = #{synchro},<!-- TODO 之后需要注释掉，update不能更改synchro字段-->
+      <!-- createdTime = #{createdTime},-->
+	updateTime = CURRENT_TIMESTAMP()
+    WHERE
+    departmentCode = #{departmentCode}
+  </update>
+
+  <select id="isExists" resultType="int">
+    select
+    count(departmentCode)
+    from
+    saf_department
+    where  departmentCode = #{departmentCode}
+  </select>
+
+  <delete id="delete">
+    delete from saf_department where departmentCode = #{departmentCode}
+  </delete>
+
+</mapper>

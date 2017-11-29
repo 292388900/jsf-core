@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ipd.jsf.worker.log.dao.JsfAlarmSettingDao" >
+  <resultMap id="BaseResultMap" type="com.ipd.jsf.worker.domain.JsfAlarmSetting" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="alarm_key" property="alarmKey" jdbcType="VARCHAR" />
+    <result column="interface_name" property="interfaceName" jdbcType="VARCHAR" />
+    <result column="method_name" property="methodName" jdbcType="VARCHAR" />
+    <result column="alarm_type" property="alarmType" jdbcType="TINYINT" />
+    <result column="notify_type" property="notifyType" jdbcType="TINYINT" />
+    <result column="extend_key1" property="extendKey1" jdbcType="VARCHAR" />
+    <result column="extend_key2" property="extendKey2" jdbcType="VARCHAR" />
+    <result column="level" property="level" jdbcType="VARCHAR" />
+    <result column="alarm_desc" property="alarmDesc" jdbcType="VARCHAR" />
+    <result column="alarm_interval" property="alarmInterval" jdbcType="INTEGER" />
+    <result column="threshold" property="threshold" jdbcType="INTEGER" />
+    <result column="is_valid" property="isValid" jdbcType="TINYINT" />
+    <result column="user_erp" property="userErp" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, alarm_key,  interface_name, method_name, alarm_type, extend_key1, extend_key2, 
+    alarm_desc, alarm_interval, is_valid, user_erp, create_time, update_time,notify_type,`level`,threshold
+  </sql>
+  <select id="selectByTime" resultMap="BaseResultMap" parameterType="java.util.Date" >
+    select 
+    <include refid="Base_Column_List" />
+    from saf_alarm_setting
+    where is_valid = 1 AND update_time > #{updateTime}
+  </select>
+  <select id="selectByPk" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from saf_alarm_setting
+    where id = #{id}
+  </select>
+
+  <insert id="insert" parameterType="com.ipd.jsf.worker.domain.JsfAlarmSetting" useGeneratedKeys="true" keyProperty="id" >
+    insert into saf_alarm_setting (alarm_key, interface_name, method_name, alarm_type, extend_key1, extend_key2,
+    	alarm_desc, alarm_interval, is_valid, user_erp, create_time, update_time)
+    values (#{alarmKey}, #{interfaceName}, #{methodName}, #{alarmType}, #{extendKey1}, #{extendKey2}, 
+    	#{alarmDesc}, #{alarmInterval}, #{isValid}, #{userErp}, #{createTime}, #{updateTime})
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="com.ipd.jsf.worker.domain.JsfAlarmSetting" >
+    update saf_alarm_setting
+    set alarm_key = #{alarmKey},
+    	interface_name = #{interfaceName},
+    	method_name = #{methodName},
+    	alarm_type = #{alarmType},
+    	extend_key1 = #{extendKey1},
+    	extend_key2 = #{extendKey2},
+		alarm_desc = #{alarmDesc},
+		alarm_interval = #{alarmInterval},
+		is_valid = #{isValid},
+		user_erp = #{userErp}
+    where id = #{id}
+  </update>
+</mapper>

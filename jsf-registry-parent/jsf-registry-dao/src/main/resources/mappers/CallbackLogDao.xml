@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.registry.dao.CallbackLogDao">
+
+    <insert id="create">
+        <![CDATA[
+        INSERT INTO saf_callback_log (
+			ip,
+			interface_name,
+			alias,
+			dataversion,
+			ins_key,
+			notify_type,
+			log_note,
+			param,
+			log_type,
+			reg_ip,
+			creator,
+			create_time)
+        VALUES 
+        ]]>
+        <foreach item="item" index="index" collection="logList" open="(" close=")" separator="),(">
+        	#{item.ip},
+        	#{item.interfaceName},
+        	#{item.alias},
+        	#{item.dataVersion},
+        	#{item.insKey},
+        	#{item.notifyType},
+        	#{item.logNote},
+        	#{item.param},
+        	#{item.logType},
+        	#{item.regIp},
+        	#{item.creator},
+        	#{item.createTime}
+        </foreach>
+    </insert>
+</mapper>

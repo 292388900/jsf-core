@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.worker.log.dao.IfaceAlarmDao">
+    <sql id="selectSQL">
+		id, `interfaceId`, `interfaceName`,`alias`, alarmType, `alarmUser`, alarmIp, `threshold`, `pcType`, createdTime, updateTime, mmsAlarm, mailAlarm
+	</sql>
+	
+	<select id="list" resultType="com.ipd.jsf.worker.domain.IfaceAlarm">
+		select 
+		<include refid="selectSQL" />
+		from 
+		saf_interface_alarm where alarmType=1 or alarmType = 2
+		order by id asc 
+	</select>
+	
+	<select id="getListByAlarmType" resultType="com.ipd.jsf.worker.domain.IfaceAlarm">
+		SELECT 
+		<include refid="selectSQL" />
+		FROM  saf_interface_alarm 
+		WHERE alarmType IN 
+		<foreach item="item" index="index" collection="typeList" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		<if test="restartAlarm != null and restartAlarm != ''">
+		    AND restartAlarm = #{restartAlarm}
+		</if>
+	</select>
+	
+</mapper>

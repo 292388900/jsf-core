@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.worker.dao.ClientDao">
+    <!-- 业务表 -->
+    <resultMap type="Client"  id="ClientResultMap">
+        <id column="client_id" property="id"  jdbcType="INTEGER"/>
+        <result column="client_uniquekey" property="uniqKey" />
+        <result column="interface_id" property="interfaceId" />
+        <result column="interface_name" property="interfaceName" />
+        <result column="client_ip" property="ip" />
+        <result column="client_pid" property="pid" />
+        <result column="client_alias" property="alias" />
+        <result column="protocol" property="protocol" />
+        <result column="client_status" property="status" />
+        <result column="saf_version" property="safVer" />
+        <result column="src_type" property="srcType" />
+        <result column="ins_key" property="insKey" />
+        <result column="start_time" property="startTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        client_id, client_uniquekey, interface_id, interface_name, client_ip, client_pid, client_alias, protocol,
+        client_status, saf_version, src_type, ins_key, start_time
+    </sql>
+
+    <!-- +++++++++++++++++++++++++++++ syn zk to db  starting +++++++++++++++++++++++++++++ -->
+    <insert id="create" parameterType="java.util.List">
+        <![CDATA[
+        INSERT INTO saf_client (client_uniquekey, interface_id, interface_name, client_ip, client_pid, client_alias, protocol, client_apppath, 
+            client_status, saf_version, src_type, start_time, create_time, update_time)
+        VALUES  ( 
+        ]]>
+        <foreach item="item" index="index" collection="clientList" open="" close=")" separator="),(">
+            #{item.uniqKey},
+            #{item.interfaceId},
+            #{item.interfaceName},
+            #{item.ip},
+            #{item.pid},
+            #{item.alias},
+            #{item.protocol},
+            #{item.appPath},
+            #{item.status},
+            #{item.safVer},
+            #{item.srcType},
+            #{item.startTime},
+            CURRENT_TIMESTAMP(),
+            CURRENT_TIMESTAMP()
+		</foreach>
+    </insert>
+
+    <update id="update">
+        UPDATE saf_client
+        SET 
+            client_apppath = #{appPath},
+            client_status = #{status},
+            saf_version = #{safVer},
+            start_time = #{startTime},
+            update_time = CURRENT_TIMESTAMP()
+        WHERE
+            client_uniquekey = #{uniqKey}
+            AND src_type = 3
+    </update>
+
+    <select id="getUniqKeyList" resultType="java.lang.String">
+        SELECT
+            client_uniquekey
+        FROM saf_client
+        WHERE
+            client_uniquekey IN
+	        <foreach item="uniqKey" index="index" collection="list" open="(" separator="," close=")">
+				#{uniqKey}
+			</foreach>
+    </select>
+    <!-- +++++++++++++++++++++++++++++ syn zk to db  end ++++++++++++++++++++++++++++++++++++++ -->
+
+    <!--+++++++++++++++++++++++++++++ scan client status starting +++++++++++++++++++++++++++++-->
+    <update id="updateStatusOnline">
+        UPDATE saf_client
+        SET 
+            client_status = (CASE WHEN client_status = 2 OR client_status = 3 THEN 2
+                                  WHEN client_status = 0 OR client_status = 1 THEN 1
+                                  ELSE 1
+                                  END), 
+            update_time = CURRENT_TIMESTAMP()
+        WHERE
+        client_id IN
+	        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+				#{item.id}
+			</foreach>
+            AND src_type = 1
+    </update>
+
+    <update id="updateStatusOffline">
+        UPDATE saf_client
+        SET 
+            client_status = (CASE WHEN client_status = 2 OR client_status = 3 THEN 3
+                                  WHEN client_status = 0 OR client_status = 1 THEN 0
+                                  ELSE 0
+                                  END), 
+            update_time = CURRENT_TIMESTAMP()
+        WHERE
+            client_id IN
+	        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+				#{item.id}
+			</foreach>
+            AND src_type = 1
+    </update>
+
+    <update id="updateStatusOnlineByIns">
+        UPDATE saf_client
+        SET
+            client_status = (CASE WHEN client_status = 2 OR client_status = 3 THEN 2
+                                  WHEN client_status = 0 OR client_status = 1 THEN 1
+                                  ELSE 1
+                                  END),
+            update_time = CURRENT_TIMESTAMP()
+        WHERE
+            ins_key IN
+	        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+				#{item.insKey}
+			</foreach>
+            AND src_type = 1
+    </update>
+
+    <update id="updateStatusOfflineByIns">
+        UPDATE saf_client
+        SET
+            client_status = (CASE WHEN client_status = 2 OR client_status = 3 THEN 3
+                                  WHEN client_status = 0 OR client_status = 1 THEN 0
+                                  ELSE 0
+                                  END),
+            update_time = CURRENT_TIMESTAMP()
+        WHERE
+            ins_key IN
+	        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+				#{item.insKey}
+			</foreach>
+            AND src_type = 1
+    </update>
+
+    <select id="getOnlineClientsByIns" resultMap="ClientResultMap">
+        SELECT DISTINCT
+        	<include refid="Base_Column_List" />
+        FROM saf_client
+        WHERE
+            ins_key IN
+	        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+				#{item.insKey}
+			</foreach>
+            AND client_status = 1
+            AND src_type = 1
+    </select>
+
+    <select id="getOfflineClientsByIns" resultMap="ClientResultMap">
+        SELECT DISTINCT
+        	<include refid="Base_Column_List" />
+        FROM saf_client
+        WHERE
+            ins_key IN
+	        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+				#{item.insKey}
+			</foreach>
+            AND client_status = 0
+            AND src_type = 1
+    </select>
+
+    <select id="getClientsByIns" resultMap="ClientResultMap">
+        SELECT DISTINCT
+        	<include refid="Base_Column_List" />
+        FROM saf_client
+        WHERE
+            ins_key IN
+	        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+				#{item.insKey}
+			</foreach>
+			AND src_type = 1
+    </select>
+    
+    <select id="getClientsByStatus" resultMap="ClientResultMap">
+        SELECT DISTINCT
+        	<include refid="Base_Column_List" />
+        FROM saf_client
+        WHERE
+            client_status = #{status}
+            AND src_type = 1
+    </select>
+    <!--+++++++++++++++++++++++++++++ scan client status end  ++++++++++++++++++++++++++++++++-->
+
+
+    <delete id="deleteById" parameterType="java.util.List">
+        DELETE FROM saf_client
+        WHERE client_id IN
+        <foreach item="item" index="index" collection="idList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND src_type = #{sourceType}
+    </delete>
+
+    <delete id="deleteByUniqkey" parameterType="java.util.List">
+        DELETE FROM saf_client
+        WHERE client_uniquekey IN
+        <foreach item="item" index="index" collection="uniqkeyList" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+        AND src_type = #{srcType}
+    </delete>
+
+    <select id="getListByInterfaceName" resultMap="ClientResultMap">
+        SELECT 
+        	<include refid="Base_Column_List" />
+        FROM saf_client
+        WHERE
+            interface_name = #{interfaceName}
+    </select>
+
+    <select id="getListByInterfaceNameAndAlias" resultMap="ClientResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM saf_client
+        WHERE
+        interface_name = #{interfaceName} AND client_alias = #{alias}
+    </select>
+    
+    <select id="getJsfClients" resultMap="ClientResultMap">
+        SELECT 
+        	<include refid="Base_Column_List" />
+        FROM saf_client
+        WHERE
+            interface_name = #{interfaceName} and src_type != 3 AND client_status IN (0, 1)
+    </select>
+
+    <select id="getNoInsClients" resultMap="ClientResultMap">
+        SELECT 
+        	<include refid="Base_Column_List" />
+        FROM saf_client a
+        WHERE
+            a.src_type = 1 AND a.update_time BETWEEN '2000-01-01 00:00:00' AND #{date}
+            AND NOT EXISTS (SELECT * FROM saf_ins_hb b WHERE b.ins_key = a.ins_key AND b.del_yn = 0)
+    </select>
+    
+    <select id="getJsfVerCount" parameterType="java.lang.String" resultType="int">
+    	select count(1) from saf_client where interface_name=#{interfaceName} and  saf_version=210
+    </select>
+
+    <!--根据接口id和alias统计consumer个数-->
+    <select id="getCountByIfaceAndAlias" resultType="int">
+        select count(1) from saf_client where interface_id = #{interfaceId} and client_alias=#{clientAlias}
+    </select>
+    
+    <select id="listByInterfaceName" resultType="java.util.HashMap">
+        select
+        c.client_ip,app.app_name
+        from
+        saf_client c
+        left join saf_ins_hb hb on hb.ins_key=c.ins_key
+        left join saf_app app  on app.app_id=hb.app_id
+        where c.interface_name=#{interfaceName} and c.client_status IN (0, 1)
+    </select>
+
+</mapper>

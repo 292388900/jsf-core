@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.worker.dao.CallbackLogDao">
+
+    <insert id="create">
+        <![CDATA[
+        INSERT INTO saf_callback_log (
+        	id,
+			ip,
+			interface_name,
+			ins_key,
+			notify_type,
+			log_note,
+			param,
+			log_type,
+			reg_ip,
+			creator,
+			create_time)
+        VALUES (
+        	#{id},
+        	#{ip},
+        	#{interfaceName},
+        	#{insKey},
+        	#{notifyType},
+        	#{logNote},
+        	#{param},
+        	#{logType},
+        	#{regIp},
+        	#{creator},
+        	#{createTime}
+        	)
+        ]]>
+    </insert>
+
+    <delete id="deleteByTime">
+        <![CDATA[
+        DELETE FROM saf_callback_log WHERE create_time < #{time} 
+        ]]>
+    </delete>
+</mapper>

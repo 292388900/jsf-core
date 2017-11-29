@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ipd.jsf.registry.dao.RegHbDao">
+
+    <insert id="insert">
+        INSERT INTO saf_reg_hb (reg_ip, hb_time) VALUES ( #{regIp}, #{hbTime} )
+        ON DUPLICATE KEY UPDATE hb_time = #{hbTime}
+    </insert>
+
+    <insert id="insertHealth">
+        INSERT INTO saf_reg_health (reg_addr, hb_time) VALUES (#{regAddr}, #{hbTime})
+    </insert>
+
+    <delete id="delHealthHistory">
+        <![CDATA[
+          DELETE FROM saf_reg_health where reg_addr = #{regAddr} and hbTime < #{period}
+        ]]>
+    </delete>
+
+    <update id="update">
+        UPDATE saf_reg_hb SET hb_time = #{hbTime} WHERE reg_ip = #{regIp}
+    </update>
+
+</mapper>
