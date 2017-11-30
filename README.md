@@ -28,4 +28,4 @@ We use mysql database. We should install mysql before. There are two databases: 
 		Mysql 5.5+
 		Maven 3.1.x
 		JDK1.8.0+
-		JSF SDK(https://github.com/tigcode/jsf-sdk)
+		[JSF SDK](https://github.com/tigcode/jsf-sdk)
