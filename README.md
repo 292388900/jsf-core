@@ -1,9 +1,12 @@
 # jsf-core
-1
-##What is JSF-CORE?
-        JSF-core is jsf server console which provide management for JSF client. The following functions are provided, such as:registration management,schedule task. In the future, we will also provide more extensive management functions.
 
-##What does JSF-CORE do?
+## What is JSF-CORE?
+
+        JSF-core is jsf server console which provide management for JSF client. The following functions 
+ are provided, such as:registration management,schedule task. In the future, we will also provide more 
+ extensive management functions.
+
+## What does JSF-CORE do?
 
 * Registry center
     *  service registry
@@ -20,10 +23,10 @@
     * count number of provider
     * count number of consumer
     
-##Database
+## Database
 We use mysql database. We should install mysql before. There are two databases: saf21 and saf_registry, which sql files were In the following directory: ${jsf-core}/jsf-common/sql. 
 
-##dependencies
+## dependencies
     	Zookeeper 3.0+
 		Mysql 5.5+
 		Maven 3.1.x
