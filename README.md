@@ -24,12 +24,12 @@
 We use mysql database. We should install mysql before. There are two databases: saf21 and saf_registry, which sql files were In the following directory: ${jsf-core}/jsf-common/sql. 
 
 ## dependencies
-*Zookeeper 3.0+
+* Zookeeper 3.0+
 
-*Mysql 5.5+
+* Mysql 5.5+
 
-*Maven 3.1.x
+* Maven 3.1.x
 
-*JDK1.8.0+
+* JDK1.8.0+
 
-*[JSF SDK](https://github.com/tigcode/jsf-sdk)
+* [JSF SDK](https://github.com/tigcode/jsf-sdk)
