@@ -40,7 +40,7 @@ public class WorkerScheduleManagerUtilTest {
         List<ScheduleServer> servers = WorkerScheduleManagerUtil.listWorkerScheduleServers("distributeWorkerDemo");
         if ( servers != null ){
 //            WorkerScheduleManagerUtil.startWorker("distributeWorkerDemo",servers.get(0).getId());
-            WorkerScheduleManagerUtil.startWorker("distributeWorkerDemo","8344$10.12.113.46$7456A81923CA46D3A3D10BFF38452FFF");
+            WorkerScheduleManagerUtil.startWorker("distributeWorkerDemo","8344$127.0.0.1$7456A81923CA46D3A3D10BFF38452FFF");
         }
     }
 
@@ -48,7 +48,7 @@ public class WorkerScheduleManagerUtilTest {
     public void testStopWorkerForInputServer() throws Exception {
         List<ScheduleServer> servers = WorkerScheduleManagerUtil.listWorkerScheduleServers("distributeWorkerDemo");
         if ( servers != null ){
-            WorkerScheduleManagerUtil.stopWorker("distributeWorkerDemo","8344$10.12.113.46$7456A81923CA46D3A3D10BFF38452FFF");
+            WorkerScheduleManagerUtil.stopWorker("distributeWorkerDemo","8344$127.0.0.1$7456A81923CA46D3A3D10BFF38452FFF");
 //            WorkerScheduleManagerUtil.stopWorker("distributeWorkerDemo",servers.get(0).getId());
         }
     }

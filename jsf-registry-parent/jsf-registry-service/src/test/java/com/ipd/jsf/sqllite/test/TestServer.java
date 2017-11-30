@@ -63,7 +63,7 @@ public class TestServer extends ServiceBaseTest {
         final Server server = new Server();
         server.setInterfaceId(2073);
         server.setInterfaceName("com.ipd.saf.service.RegistryService");
-        server.setIp("10.12.107.84");
+        server.setIp("127.0.0.1");
         server.setPort(40990);
         server.setPid(5555);
         server.setAlias("test");

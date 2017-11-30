@@ -81,7 +81,7 @@ public class RegistryUtil {
 	}
 	
 	public static void main(String[] args) {
-		String desc = "JsfUrl(ip:192.168.151.142,port:0,pid:32199,interface:com.ipd.jsf.monitor.query.RegistryDataService,alias:monitorquery,protocol:1,timeout:0,random:false,startTime:1420707930047,insKey:192.168.151.142_32199_30047,dataversion:1419842061000,attrs:{apppath=/export/jsf/saf-admin-tomcat/bin, timestamp=1420707931617, jsfVersion=1000, re-reg=true, safVersion=210, language=java, consumer=1})";
+		String desc = "JsfUrl(ip:127.0.0.1,port:0,pid:32199,interface:com.ipd.jsf.monitor.query.RegistryDataService,alias:monitorquery,protocol:1,timeout:0,random:false,startTime:1420707930047,insKey:127.0.0.1_32199_30047,dataversion:1419842061000,attrs:{apppath=/export/jsf/saf-admin-tomcat/bin, timestamp=1420707931617, jsfVersion=1000, re-reg=true, safVersion=210, language=java, consumer=1})";
 		System.out.println(getValueFromDeslUrl(desc, "jsfVersion"));
 	}
 }

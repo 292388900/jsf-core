@@ -32,8 +32,7 @@ public class TestRegistryStatusService {
 //      consumerConfig.setRegistry(registries);
         consumerConfig.setProtocol("jsf");
         consumerConfig.setAlias("reg");
-//        consumerConfig.setUrl("saf://127.0.0.1:40660");
-        consumerConfig.setUrl("jsf://10.12.122.28:40660");
+        consumerConfig.setUrl("jsf://127.0.0.1:40660");
         consumerConfig.setRegister(false);//打开注释表示不走注册中心
         
         consumerConfig.setGeneric(true);

@@ -47,8 +47,6 @@ public class DefaultScheduleDataManagerTest {
 
     @Test
     public void testFixMaster() throws Exception {
-        //scheduleDataManager.fixMaster("demoWorker","10104$10.12.113.39$F1DA79AC3A424ACB8E6401CDC25BEB99");
-//        scheduleDataManager.fixMaster("demoWorker","5480$10.12.113.55$5F7F50FBDC1E4967B57D1630FF6E6A79");
 
     }
 

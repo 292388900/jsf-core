@@ -34,7 +34,7 @@ public class TestClientDao extends ServiceBaseTest {
         try {
             List<JsfIns> insList = new ArrayList<JsfIns>();
             JsfIns ins = new JsfIns();
-            ins.setIp("192.168.75.10");
+            ins.setIp("127.0.0.1");
             ins.setPid(12345);
             insList.add(ins);
             List<Client> list = clientDao.getOnlineClientsByIns(insList);
@@ -51,7 +51,7 @@ public class TestClientDao extends ServiceBaseTest {
     public void test1() {
         try {
             JsfIns ins = new JsfIns();
-            ins.setIp("192.168.75.10");
+            ins.setIp("127.0.0.1");
             ins.setPid(10000);
             List<JsfIns> list = new ArrayList<JsfIns>();
             list.add(ins);
@@ -68,7 +68,7 @@ public class TestClientDao extends ServiceBaseTest {
     public void test2() {
         try {
             JsfIns ins = new JsfIns();
-            ins.setIp("192.168.75.10");
+            ins.setIp("127.0.0.1");
             ins.setPid(10000);
             List<JsfIns> list = new ArrayList<JsfIns>();
             list.add(ins);

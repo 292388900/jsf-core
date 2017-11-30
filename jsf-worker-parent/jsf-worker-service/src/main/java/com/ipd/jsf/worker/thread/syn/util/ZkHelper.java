@@ -385,7 +385,7 @@ public class ZkHelper {
     }
 
     public static void main(String[] args) {
-        String connStr = "192.168.108.115:2181,192.168.108.116:2181,192.168.151.144:2181,192.168.151.143:2181,192.168.151.139:2181";
+        String connStr = "127.0.0.1:2181";
         try {
             ZooKeeper zookeeper = new ZooKeeper(connStr, 100000,
                 new Watcher() {

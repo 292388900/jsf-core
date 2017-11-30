@@ -54,9 +54,9 @@ public class TestSafInsManager extends ServiceBaseTest {
 
 //    @Test
     public void create() throws Exception {
-        String regIp = "192.168.75.10";
+        String regIp = "127.0.0.1";
         for (int i = 0; i < 100; i++) {
-            String ip = "192.168.1." + (new Random()).nextInt(10);
+            String ip = "127.0.0." + (new Random()).nextInt(10);
             int pid = (new Random()).nextInt(100);
             Date startTime = new Date();
             JsfIns ins = new JsfIns();
@@ -80,8 +80,8 @@ public class TestSafInsManager extends ServiceBaseTest {
     public void create1() throws Exception {
     	appCache.refreshCache();
     	appInsCache.refreshCache();
-    	String regIp = "192.168.75.10";
-		String ip = "192.168.1.123";
+    	String regIp = "127.0.0.1";
+		String ip = "127.0.0.1";
 		int pid = 12345;
 		Date startTime = new Date();
 		JsfIns ins = new JsfIns();
@@ -105,21 +105,10 @@ public class TestSafInsManager extends ServiceBaseTest {
 		Assert.assertNotSame(0, result);
     }
 
-//    @Test
-//    public void updateList() throws Exception {
-//        String regIp = "192.168.75.10";
-//        List<String> list = mockList();
-//        long start = System.currentTimeMillis();
-//        int result = safInsManagerImpl.batchUpdateHb(list, new Date(), regIp);
-//        long end = System.currentTimeMillis();
-//        logger.info("getList   ---   result: {},   elapse: {}ms" , result, (end - start));
-//        Assert.assertNotSame(0, result);
-//    }
-    
     private List<String> mockList() {
         List<String> list = new ArrayList<String>();
         for (int i = 0 ; i < 1501; i++) {
-            String ip = "192.168.1." + (new Random()).nextInt(10);
+            String ip = "127.0.0." + (new Random()).nextInt(10);
             int pid = (new Random()).nextInt(100);
             Date startTime = new Date();
             list.add(UniqkeyUtil.getInsKey(ip, pid, startTime.getTime()));
@@ -127,36 +116,6 @@ public class TestSafInsManager extends ServiceBaseTest {
         return list;
     }
     
-//    @Test
-//    public void testBatchUpdateHb() throws Exception {
-//        BlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>();
-//        ExecutorService t = new ThreadPoolExecutor(100, 100, 0, TimeUnit.MILLISECONDS, queue);
-//        
-//        for (int n = 0; n < 10000; n++) {
-//            final int k = n;
-//            t.execute(new Runnable() {
-//                @Override
-//                public void run() {
-//                    List<String> list = new ArrayList<String>();
-//                    for (int i = 0; i < 1000; i++) {
-//                        String ip = "192.168." + (k % 255) + "." + (i % 255);
-//                        int pid = i * 20;
-//                        Date startTime = new Date();
-//                        list.add(UniqkeyUtil.getInsKey(ip, pid, startTime.getTime()));
-//                    }
-//                    try {
-//                        safInsManagerImpl.batchUpdateHb(list, new Date(), "172.16.10.1");
-//                        System.out.println("complete!!! -- " + k);
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                }
-//            });
-//        }
-//        Thread.sleep(50000);
-//    }
-
     /**
      * 批量插入数据，用来模拟心跳表的数据
      * @throws Exception
@@ -169,8 +128,8 @@ public class TestSafInsManager extends ServiceBaseTest {
                 @Override
                 public void run() {
                     try {
-                        String regIp = "192.168.75.10";
-                        String ip = "192.168.100." + (new Random()).nextInt(255);
+                        String regIp = "127.0.0.1";
+                        String ip = "127.0.0." + (new Random()).nextInt(255);
                         int pid = (new Random()).nextInt(100);
                         Date startTime = new Date();
                         JsfIns ins = new JsfIns();
@@ -198,24 +157,4 @@ public class TestSafInsManager extends ServiceBaseTest {
         Thread.sleep(600000);
     }
 
-//    @Test
-//    public void updateList1() throws Exception {
-//        try {
-//            String regIp = "192.168.75.10";
-////            List<SafIns> list = safInsDao.getList();
-//            //TODO 需要加getList才能测试
-//            List<SafIns> list = new ArrayList<SafIns>();
-//            List<String> strList = new ArrayList<String>();
-//            for (SafIns ins : list) {
-//                strList.add(ins.getInsKey());
-//            }
-//            long start = System.currentTimeMillis();
-//            int result = safInsManagerImpl.batchUpdateHb(strList, new Date(), regIp);
-//            long end = System.currentTimeMillis();
-//            logger.info("getList   ---   result: {},   elapse: {}ms" , result, (end - start));
-//            Assert.assertNotSame(0, result);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 }

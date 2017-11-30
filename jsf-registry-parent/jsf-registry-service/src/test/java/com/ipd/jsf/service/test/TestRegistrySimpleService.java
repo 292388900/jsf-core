@@ -38,8 +38,7 @@ public class TestRegistrySimpleService {
         consumerConfig.setInterfaceId(RegistryHttpService.class.getName());
         consumerConfig.setAlias("reg");
         consumerConfig.setProtocol("jsf");
-//        consumerConfig.setUrl("jsf://10.12.165.46:40660");
-        consumerConfig.setUrl("jsf://192.168.151.142:40660");
+        consumerConfig.setUrl("jsf://127.0.0.1:40660");
         consumerConfig.setRegister(false);//打开注释表示不走注册中心
         consumerConfig.setParameter(".token", "1qaz2wsx");
         Map<String, String> map = new HashMap<String, String>();
@@ -48,9 +47,9 @@ public class TestRegistrySimpleService {
         param.setAlias("baont");
         param.setDataVer(0);
         param.setIface("com.ipd.testjsf.HelloBaontService");
-        param.setIp("10.12.165.46");
+        param.setIp("127.0.0.1");
         param.setProtocol(1);
-        param.setInsKey("10.12.165.46_123_12345");
+        param.setInsKey("127.0.0.1_123_12345");
         param.setAttrs(map);
         RegistryHttpService registrySimpleService = consumerConfig.refer();
 

@@ -48,7 +48,7 @@ public class ReferMain {
 
     private String register(RegistryService messageSender) {
         JsfUrl safUrl = new JsfUrl();
-        safUrl.setIp("192.168.75.10");
+        safUrl.setIp("127.0.0.1");
         safUrl.setPort(40000);
         safUrl.setAlias("test");
         safUrl.setPid(12345);

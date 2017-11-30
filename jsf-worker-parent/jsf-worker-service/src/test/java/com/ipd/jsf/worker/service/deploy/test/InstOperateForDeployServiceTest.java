@@ -32,8 +32,7 @@ public class InstOperateForDeployServiceTest {
 	        consumerConfig.setProtocol("jsf");
 	        consumerConfig.setAlias("jsf-deploy");
 	        consumerConfig.setRegister(false);
-	        consumerConfig.setUrl("jsf://10.12.166.26:22000");
-//	        consumerConfig.setUrl("jsf://192.168.150.121:22001");
+	        consumerConfig.setUrl("jsf://127.0.0.1:22000");
 	        consumerConfig.setParameter(".token", "deploy_call");
 	        InstOperateForDeployService service = consumerConfig.refer();
 
@@ -60,7 +59,7 @@ public class InstOperateForDeployServiceTest {
 	        consumerConfig.setProtocol("jsf");
 	        consumerConfig.setAlias("jsf-deploy");
 	        consumerConfig.setRegister(false);
-	        consumerConfig.setUrl("jsf://10.12.166.26:22000");
+	        consumerConfig.setUrl("jsf://127.0.0.1:22000");
 	        consumerConfig.setParameter(".token", "deploy_call");
 	        InstOperateForDeployService service = consumerConfig.refer();
 
@@ -108,7 +107,7 @@ public class InstOperateForDeployServiceTest {
 	        consumerConfig.setProtocol("jsf");
 	        consumerConfig.setAlias("jsf-deploy");
 	        consumerConfig.setRegister(false);
-	        consumerConfig.setUrl("jsf://10.12.166.26:22000");
+	        consumerConfig.setUrl("jsf://127.0.0.1:22000");
 	        consumerConfig.setParameter(".token", "deploy_call");
 	        InstOperateForDeployService service = consumerConfig.refer();
 

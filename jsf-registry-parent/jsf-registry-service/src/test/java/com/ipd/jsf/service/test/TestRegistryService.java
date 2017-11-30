@@ -45,15 +45,15 @@ public class TestRegistryService {
         consumerConfig.setInterfaceId(RegistryService.class.getName());
         consumerConfig.setAlias("reg");
         consumerConfig.setProtocol("jsf");
-        consumerConfig.setUrl("jsf://10.12.122.27:40660");
+        consumerConfig.setUrl("jsf://127.0.0.1:40660");
         consumerConfig.setRegister(false);//打开注释表示不走注册中心
         
         RegistryService registryService = consumerConfig.refer();
         List<JsfUrl> list = new ArrayList<JsfUrl>();
         //请测试前在lookup方法中设置client ip
         JsfUrl jsfUrl = new JsfUrl();
-        jsfUrl.setIp("10.12.122.27");
-        jsfUrl.setInsKey("10.12.122.27_12345_12345");
+        jsfUrl.setIp("127.0.0.1");
+        jsfUrl.setInsKey("127.0.0.1_12345_12345");
         jsfUrl.setProtocol(1);
         jsfUrl.setPid(12345);
         jsfUrl.setStTime(new Date().getTime());
@@ -63,8 +63,8 @@ public class TestRegistryService {
         list.add(jsfUrl);
         
         jsfUrl = new JsfUrl();
-        jsfUrl.setIp("10.12.122.27");
-        jsfUrl.setInsKey("10.12.122.27_12345_12345");
+        jsfUrl.setIp("127.0.0.1");
+        jsfUrl.setInsKey("127.0.0.1_12345_12345");
         jsfUrl.setProtocol(1);
         jsfUrl.setPid(12345);
         jsfUrl.setStTime(new Date().getTime());
@@ -84,14 +84,14 @@ public class TestRegistryService {
         consumerConfig.setInterfaceId(RegistryService.class.getName());
         consumerConfig.setAlias("reg");
         consumerConfig.setProtocol("jsf");
-        consumerConfig.setUrl("jsf://192.168.150.119:40660");
+        consumerConfig.setUrl("jsf://127.0.0.1:40660");
         consumerConfig.setRegister(false);//打开注释表示不走注册中心
         
         RegistryService registryService = consumerConfig.refer();
         List<JsfUrl> list = new ArrayList<JsfUrl>();
         //请测试前在lookup方法中设置client ip
         JsfUrl jsfUrl = new JsfUrl();
-        jsfUrl.setIp("10.12.122.27");
+        jsfUrl.setIp("127.0.0.1");
         jsfUrl.setPid(12345);
         jsfUrl.setStTime(new Date().getTime());
         jsfUrl.setDataVersion(0);

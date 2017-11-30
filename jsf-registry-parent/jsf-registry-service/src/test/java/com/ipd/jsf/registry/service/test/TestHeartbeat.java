@@ -49,9 +49,9 @@ public class TestHeartbeat extends ServiceBaseTest {
     }
     
     private void testSaveIns() throws Exception {
-        String regIp = "192.168.75.10";
+        String regIp = "127.0.0.1";
         for (int i = 0; i < 1000; i++) {
-            String ip = "192.168.1." + i%255;
+            String ip = "127.0.0." + i%255;
             int pid = i * 10;
             
             JsfIns ins = new JsfIns();
@@ -74,7 +74,7 @@ public class TestHeartbeat extends ServiceBaseTest {
     private void testPutHbCache() throws Exception {
         for (int n = 0; n < 15; n++) {
             for (int i = 0; i < 1000; i++) {
-                String ip = "192.168.1." + i%255;
+                String ip = "127.0.0." + i%255;
                 int pid = i * 10;
                 String insKey = UniqkeyUtil.getInsKey(ip, pid, startTime.getTime());
                 heartbeatService.putHbCache(insKey);
@@ -91,7 +91,7 @@ public class TestHeartbeat extends ServiceBaseTest {
                 public void run() {
                     while(true) {
                         for (int i = 0; i < 1000; i++) {
-                            String ip = "192.168.1." + i%255;
+                            String ip = "127.0.0." + i%255;
                             int pid = i * 10;
                             String insKey = UniqkeyUtil.getInsKey(ip, pid, startTime.getTime());
                             try {
@@ -111,11 +111,4 @@ public class TestHeartbeat extends ServiceBaseTest {
         }
         logger.info("putHbCache ");
     }
-//    private void testSaveHb() throws Exception {
-//        String regIp = "192.168.75.10";
-//        long start = System.currentTimeMillis();
-//        heartbeatService.saveHb(regIp);
-//        long end = System.currentTimeMillis();
-//        logger.info("saveHb   ---   elapse: {}ms" , (end - start));
-//    }
 }

@@ -456,7 +456,6 @@ public class RegistryUtil {
                 providerUrl.setPort(jsfUrl.getPort());
                 providerUrl.setAlias(jsfUrl.getAlias());
                 providerUrl.setProtocol(jsfUrl.getProtocol());
-//                providerUrl.setAttrs(jsfUrl.getAttrs());
                 result.add(providerUrl);
             }
         }
@@ -472,31 +471,4 @@ public class RegistryUtil {
         return stringBuffer.toString();
     }
 
-    public static void main(String[] args) {
-//        String reg = "10.12.122.([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])";
-//        String ip = "10.12.122.254";
-//        Pattern pattern = Pattern.compile(reg);
-//        Matcher matcher = pattern.matcher(ip);
-//        if (matcher.matches()) {
-//            System.out.println("yes");
-//        } else {
-//            System.out.println("no");
-//        }
-        
-//        System.out.println(getMapFromMapString("{dynamic=true, crossLang=false, jsfVersion=1000, safVersion=210, language=java}", new String[]{"jsfVersion", "safVersion"}));
-        System.out.println(getMapFromMapString("{app=jsf-check-worker, LANGUAGE=java, appId=10701, jsfVersion=1551}", new String[]{"jsfVersion"}));
-
-        //        Map<Integer, JsfSerialization> map = new HashMap<Integer, JsfSerialization>();
-//        JsfSerialization jsf = new JsfSerialization();
-//        jsf.setList(new ArrayList<String>());
-//        jsf.getList().add("msgpack");
-//        jsf.getList().add("hessian");
-//        JsfSerialization jsf2 = new JsfSerialization();
-//        jsf2.setList(new ArrayList<String>());
-//        jsf2.getList().add("msgpack");
-//        jsf2.getList().add("hessian");
-//        map.put(1010, jsf2);
-//        map.put(1000, jsf);
-//        System.out.println(JSON.toJSONString(map));
-    }
 }

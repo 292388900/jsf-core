@@ -32,25 +32,10 @@ public class TestRegistryQueryService {
      * @throws Exception 
      */
     public static void main(String[] args) throws Exception {
-        // 服务提供者连接注册中心，设置属性
-//        ConsumerConfig<GenericService> consumerConfig = new ConsumerConfig<GenericService>();
-//        consumerConfig.setInterfaceId(RegistryQueryService.class.getName());
-//        consumerConfig.setProtocol("saf");
-//        consumerConfig.setAlias("saf");
-////        consumerConfig.setUrl("saf://127.0.0.1:40660");
-//        consumerConfig.setUrl("saf://192.168.209.74:40660");
-//        consumerConfig.setRegister(false);//打开注释表示不走注册中心
-//        consumerConfig.setGeneric(true);
-//        GenericService service = (GenericService)consumerConfig.refer();
-//        String[] paramType = {"String"};
-//        Object[] object = {"com.ipd.testsaf.HelloService"};
-//        System.out.println(service.$invoke("getProviders", paramType, object));
-        
+
         
         TestRegistryQueryService service = new TestRegistryQueryService();
         service.getInterface();
-//        service.getInskeyList();
-//        service.getInskey();
     }
 
     public void getInterface() throws Exception {
@@ -58,9 +43,7 @@ public class TestRegistryQueryService {
         consumerConfig.setInterfaceId(RegistryQueryService.class.getName());
         consumerConfig.setAlias("reg");
         consumerConfig.setProtocol("jsf");
-//        consumerConfig.setUrl("jsf://192.168.151.142:40660");
-        consumerConfig.setUrl("jsf://10.12.165.67:40660");
-//        consumerConfig.setUrl("saf://127.0.0.1:40660");
+        consumerConfig.setUrl("jsf://127.0.0.1:40660");
         consumerConfig.setRegister(false);//打开注释表示不走注册中心
         
         RegistryQueryService service = consumerConfig.refer();
@@ -68,7 +51,6 @@ public class TestRegistryQueryService {
         page.setPageIndex(1);
         page.setPageSize(10);
         page.getParams().put("interface", "com.ipd.testjsf.HelloBaontService");
-//        page.getParams().put("ip", "10.12.104.232");
         page.getParams().put("alias", "baont");
         page.getParams().put("protocol", "1");
         InterfaceInfoVo vo = service.getProviders(page);
@@ -82,7 +64,6 @@ public class TestRegistryQueryService {
         consumerConfig.setInterfaceId(RegistryQueryService.class.getName());
         consumerConfig.setAlias("saf");
         consumerConfig.setProtocol("saf");
-//        consumerConfig.setUrl("saf://192.168.209.74:40660");
         consumerConfig.setUrl("saf://127.0.0.1:40660");
         consumerConfig.setRegister(false);//打开注释表示不走注册中心
         
@@ -90,7 +71,6 @@ public class TestRegistryQueryService {
         Paging page = new Paging();
         page.setPageIndex(1);
         page.setPageSize(10);
-//        page.getParams().put("inskey", "10.12.122.28_7528_19434");
         InstanceResponse ins = service.getInstanceList(page);
         System.out.println(ins.getInstanceList());
         System.out.println(ins.getTotalRecord());
@@ -101,12 +81,11 @@ public class TestRegistryQueryService {
         consumerConfig.setInterfaceId(RegistryQueryService.class.getName());
         consumerConfig.setAlias("saf");
         consumerConfig.setProtocol("saf");
-//        consumerConfig.setUrl("saf://192.168.209.74:40660");
         consumerConfig.setUrl("saf://127.0.0.1:40660");
         consumerConfig.setRegister(false);//打开注释表示不走注册中心
         
         RegistryQueryService service = consumerConfig.refer();
-        Instance vo = service.getInstance("10.12.122.28_4452_92205");
+        Instance vo = service.getInstance("127.0.0.1_4452_92205");
         System.out.println(vo.getProviders());
         System.out.println(vo.getInsKey());
         System.out.println(vo.getConfig());

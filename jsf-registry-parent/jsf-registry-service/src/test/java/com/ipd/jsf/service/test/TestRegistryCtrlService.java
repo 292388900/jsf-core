@@ -52,14 +52,13 @@ public class TestRegistryCtrlService {
         consumerConfig.setInterfaceId(RegistryCtrlService.class.getName());
         consumerConfig.setAlias("saf");
         consumerConfig.setProtocol("saf");
-//        consumerConfig.setUrl("saf://127.0.0.1:40660");
-        consumerConfig.setUrl("saf://192.168.209.74:40660");
+        consumerConfig.setUrl("saf://127.0.0.1:40660");
         consumerConfig.setRegister(false);//打开注释表示不走注册中心
         Map<String, String> attribute = new HashMap<String, String>();
         attribute.put("weight", "1");
         RegistryCtrlService service = consumerConfig.refer();
         List<String> insKeyList = new ArrayList<String>();
-        insKeyList.add("10.12.122.28_8008_57795");
+        insKeyList.add("127.0.0.1_8008_57795");
         
         service.pinpointCallbackInterfaceConfig("com.ipd.testsaf.HelloService", insKeyList, attribute, true);
     }
@@ -73,13 +72,12 @@ public class TestRegistryCtrlService {
         consumerConfig.setAlias("reg");
         consumerConfig.setProtocol("jsf");
         consumerConfig.setUrl("jsf://127.0.0.1:40660");
-//        consumerConfig.setUrl("saf://192.168.209.74:40660");
         consumerConfig.setRegister(false);//打开注释表示不走注册中心
         Map<String, String> attribute = new HashMap<String, String>();
         attribute.put("alias", "jsf");
         RegistryCtrlService service = consumerConfig.refer();
         List<String> insKeyList = new ArrayList<String>();
-        insKeyList.add("10.12.122.28_7564_04428");
+        insKeyList.add("127.0.0.1_7564_04428");
         
         service.pinpointCallbackInterfaceConfig("com.ipd.testjsf.HelloService", insKeyList, attribute, false);
     }
@@ -92,16 +90,11 @@ public class TestRegistryCtrlService {
         consumerConfig.setInterfaceId(RegistryCtrlService.class.getName());
         consumerConfig.setAlias("reg");
         consumerConfig.setProtocol("jsf");
-//        consumerConfig.setUrl("saf://192.168.209.74:40660");
-        consumerConfig.setUrl("jsf://192.168.209.80:40660");
-//        consumerConfig.setUrl("saf://127.0.0.1:40660");
+        consumerConfig.setUrl("jsf://127.0.0.1:40660");
         consumerConfig.setRegister(false);//打开注释表示不走注册中心
         
         RegistryCtrlService service = consumerConfig.refer();
-//        System.out.println(service.consumerConfig(57933, "SAF:0.0.1", "10.12.122.28_5272_97870", (byte)3));
-//        System.out.println(service.consumerConfig(2497, "SAF_0.0.1", 1, "192.168.209.79_41046_28593", (byte)1));
-//        System.out.println(service.consumerConfig("com.ipd.testsaf.TestNewSafHelloService", "SAF_0.0.1", 1, "192.168.209.79_41046_28593", (byte)1));
-        System.out.println(service.consumerConfig("com.ipd.testjsf.HelloService", "baont", 1, "10.12.122.28_6500_57172", (byte)1));
+        System.out.println(service.consumerConfig("com.ipd.testjsf.HelloService", "baont", 1, "127.0.0.1_6500_57172", (byte)1));
     }
     
     public void disConnect() {
@@ -111,13 +104,11 @@ public class TestRegistryCtrlService {
         consumerConfig.setInterfaceId(RegistryCtrlService.class.getName());
         consumerConfig.setAlias("reg");
         consumerConfig.setProtocol("jsf");
-//        consumerConfig.setUrl("jsf://192.168.209.74:40660");
-//        consumerConfig.setUrl("jsf://192.168.209.80:40660");
-        consumerConfig.setUrl("jsf://10.12.122.28:40660");
+        consumerConfig.setUrl("jsf://127.0.0.1:40660");
         consumerConfig.setRegister(false);//打开注释表示不走注册中心
         
         RegistryCtrlService service = consumerConfig.refer();
-        System.out.println(service.insCtrl("10.12.122.28_5540_34076", (byte)1));
+        System.out.println(service.insCtrl("127.0.0.1_5540_34076", (byte)1));
     }
     
     public void recover() {
@@ -127,13 +118,11 @@ public class TestRegistryCtrlService {
         consumerConfig.setInterfaceId(RegistryCtrlService.class.getName());
         consumerConfig.setAlias("reg");
         consumerConfig.setProtocol("jsf");
-//        consumerConfig.setUrl("jsf://192.168.209.74:40660");
-//        consumerConfig.setUrl("jsf://192.168.209.80:40660");
-        consumerConfig.setUrl("jsf://10.12.122.28:40660");
+        consumerConfig.setUrl("jsf://127.0.0.1:40660");
         consumerConfig.setRegister(false);//打开注释表示不走注册中心
         
         RegistryCtrlService service = consumerConfig.refer();
-        System.out.println(service.insCtrl("10.12.122.28_6604_12058", (byte)2));
+        System.out.println(service.insCtrl("127.0.0.1_6604_12058", (byte)2));
     }
     
 
@@ -144,7 +133,7 @@ public class TestRegistryCtrlService {
         consumerConfig.setInterfaceId("com.ipd.jsf.service.RegistryCtrlService");
         consumerConfig.setProtocol("jsf");
         consumerConfig.setAlias("reg");
-        consumerConfig.setUrl("jsf://10.12.122.27:40660");
+        consumerConfig.setUrl("jsf://127.0.0.1:40660");
 //        consumerConfig.setCluster(Constants.CLUSTER_TRANSPORT_PINPOINT);
 
         List<MethodConfig> methods = new ArrayList<MethodConfig>();
@@ -166,7 +155,7 @@ public class TestRegistryCtrlService {
         consumerConfig.setInterfaceId("com.ipd.jsf.service.RegistryCtrlService");
         consumerConfig.setProtocol("jsf");
         consumerConfig.setAlias("reg");
-        consumerConfig.setUrl("jsf://10.12.165.46:40660");
+        consumerConfig.setUrl("jsf://127.0.0.1:40660");
 
         RegistryCtrlService service = consumerConfig.refer();
         

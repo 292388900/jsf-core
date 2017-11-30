@@ -740,7 +740,7 @@ public class ZkClient implements Watcher {
 	 */
 	public static void main(String[] args) {
 		try {
-			ZkClient client = new ZkClient("192.168.229.53:2183", 3000, 300000);
+			ZkClient client = new ZkClient("127.0.0.1:2183", 3000, 300000);
 			client.connect();
 			//client.create("/1test", null, CreateMode.PERSISTENT);
 			Boolean s1 = client.exists("/1test");

@@ -32,7 +32,7 @@ public class TestClientDao extends ServiceBaseTest {
     @Test
     public void testUpdate() {
         Client client = new Client();
-        client.setUniqKey("10.12.106.23;154124;SAF_0.0.1;1;2074");
+        client.setUniqKey("127.0.0.1;154124;SAF_0.0.1;1;2074");
         client.setInsKey("");
         client.setUpdateTime(new Date());
         try {

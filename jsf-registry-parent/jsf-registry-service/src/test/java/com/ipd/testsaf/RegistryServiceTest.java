@@ -103,7 +103,7 @@ public class RegistryServiceTest {
      */
     public void testProviderRegistry() {
         JsfUrl safUrl = new JsfUrl();
-        safUrl.setIp("192.168.75." + Math.abs(new Random().nextInt(255)));  //TODO
+        safUrl.setIp("127.0.0." + Math.abs(new Random().nextInt(255)));  //TODO
         safUrl.setPort(new Random().nextInt(20));          //TODO
         safUrl.setAlias("1bnt_test" + new Random().nextInt(25500));        //TODO
         safUrl.setPid(12345);           //TODO
@@ -142,7 +142,7 @@ public class RegistryServiceTest {
      */
     public void testConsumerRegistry() {
         JsfUrl safUrl = new JsfUrl();
-        safUrl.setIp("192.168.75." + new Random().nextInt(255));  //TODO
+        safUrl.setIp("127.0.0." + new Random().nextInt(255));  //TODO
         safUrl.setAlias("test");        //TODO
         safUrl.setPid(new Random().nextInt(65535));           //TODO
         safUrl.setStTime((new Date()).getTime());              //TODO
@@ -173,14 +173,14 @@ public class RegistryServiceTest {
      */
     public void testProviderUnRegistry() {
         JsfUrl safUrl = new JsfUrl();
-        safUrl.setIp("192.168.75.10");  //TODO
+        safUrl.setIp("127.0.0.1");  //TODO
         safUrl.setPort(32842);          //TODO
         safUrl.setAlias("bnt_test");        //TODO
         safUrl.setPid(12345);           //TODO
         safUrl.setStTime((new Date()).getTime());              //TODO
         safUrl.setIface("com.ipd.testsaf.TestHelloService");    //TODO
         safUrl.setProtocol(ProtocolType.jsf.value());     //区分是consumer还是provider
-        safUrl.setInsKey("192.168.75.10_12345_87679");
+        safUrl.setInsKey("127.0.0.1_12345_87679");
         try {
             registryService.doUnRegister(safUrl);
         } catch (Exception e) {
@@ -192,7 +192,7 @@ public class RegistryServiceTest {
      */
     public void testConsumerUnRegistry() {
         JsfUrl safUrl = new JsfUrl();
-        safUrl.setIp("192.168.75.10");  //TODO
+        safUrl.setIp("127.0.0.1");  //TODO
         safUrl.setAlias("test");        //TODO
         safUrl.setPid(12345);           //TODO
         safUrl.setStTime((new Date()).getTime());              //TODO
@@ -210,7 +210,7 @@ public class RegistryServiceTest {
      */
     public void testHeartbeat() {
         Heartbeat hb = new Heartbeat();
-        String insKey = getInsKey("192.168.209.100", 10234, System.currentTimeMillis());
+        String insKey = getInsKey("127.0.0.1", 10234, System.currentTimeMillis());
         hb.setInsKey(insKey);
         try {
             registryService.doHeartbeat(hb);
@@ -223,12 +223,12 @@ public class RegistryServiceTest {
      */
     public void testLookup() {
         JsfUrl safUrl = new JsfUrl();
-        safUrl.setInsKey(getInsKey("192.168.209.100", 10234, System.currentTimeMillis()));
+        safUrl.setInsKey(getInsKey("127.0.0.1", 10234, System.currentTimeMillis()));
 //        safUrl.setIface("com.ipd.testsaf.TestHelloService");
         safUrl.setIface("com.ipd.testjsf.HelloService");
         safUrl.setAlias("baont");
         safUrl.setProtocol(ProtocolType.jsf.value());
-        safUrl.setIp("192.168.209.100");   //TODO 请填写真实IP
+        safUrl.setIp("127.0.0.1");   //TODO 请填写真实IP
         safUrl.setDataVersion(123);          //TODO 需要修改
         SubscribeUrl url = registryService.lookup(safUrl);
         System.out.println(JSON.toJSONString(url));
@@ -239,7 +239,7 @@ public class RegistryServiceTest {
      */
     public void testGetGlobalConfig() {
         JsfUrl safUrl = new JsfUrl();
-        safUrl.setIp("192.168.209.100");   //TODO 请填写真实IP
+        safUrl.setIp("127.0.0.1");   //TODO 请填写真实IP
         safUrl.setPid(12345);              //TODO pid
         safUrl.setStTime(System.currentTimeMillis());   //TODO 启动时间
         safUrl.setDataVersion(0);          //TODO 需要修改
@@ -282,7 +282,7 @@ public class RegistryServiceTest {
      */
     public void testProviderRegistryList() {
         JsfUrl jsfUrl = new JsfUrl();
-        jsfUrl.setIp("192.168.75." + Math.abs(new Random().nextInt(255)));  //TODO
+        jsfUrl.setIp("127.0.0." + Math.abs(new Random().nextInt(255)));  //TODO
         jsfUrl.setPort(new Random().nextInt(20));          //TODO
         jsfUrl.setAlias("1bnt_test" + new Random().nextInt(25500));        //TODO
         jsfUrl.setPid(12345);           //TODO
@@ -315,14 +315,14 @@ public class RegistryServiceTest {
      */
     public void testProviderUnRegistryList() {
         JsfUrl jsfUrl = new JsfUrl();
-        jsfUrl.setIp("192.168.75.10");  //TODO
+        jsfUrl.setIp("127.0.0.1");  //TODO
         jsfUrl.setPort(32842);          //TODO
         jsfUrl.setAlias("bnt_test");        //TODO
         jsfUrl.setPid(12345);           //TODO
         jsfUrl.setStTime((new Date()).getTime());              //TODO
         jsfUrl.setIface("com.ipd.testsaf.TestHelloService");    //TODO
         jsfUrl.setProtocol(ProtocolType.jsf.value());     //区分是consumer还是provider
-        jsfUrl.setInsKey("192.168.75.10_12345_87679");
+        jsfUrl.setInsKey("127.0.0.1_12345_87679");
         try {
         	List<JsfUrl> jsfUrlList = new ArrayList<JsfUrl>();
         	jsfUrlList.add(jsfUrl);

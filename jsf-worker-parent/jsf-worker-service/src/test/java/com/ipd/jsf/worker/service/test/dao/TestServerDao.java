@@ -35,7 +35,7 @@ public class TestServerDao extends ServiceBaseTest {
         try {
             List<JsfIns> insList = new ArrayList<JsfIns>();
             JsfIns ins = new JsfIns();
-            ins.setIp("192.168.75.10");
+            ins.setIp("127.0.0.1");
             ins.setPid(12345);
             insList.add(ins);
             

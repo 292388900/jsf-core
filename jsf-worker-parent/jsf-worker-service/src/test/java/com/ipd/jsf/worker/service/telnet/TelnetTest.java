@@ -34,36 +34,36 @@ public class TelnetTest {
 			ScanNodeStatusHelper helper = new ScanNodeStatusHelper();
 			
 			//检查正常情况
-			byte t = helper.doCheck("com.ipd.jsf.service.RegistryService", "192.168.150.121", 40660, "reg", 1);
+			byte t = helper.doCheck("com.ipd.jsf.service.RegistryService", "127.0.0.1", 40660, "reg", 1);
 			Assert.assertEquals(helper.TELNET_OK, t);
 
 			//检查分组错误的情况
-			t = helper.doCheck("com.ipd.jsf.service.RegistryService", "192.168.150.121", 40660, "reg1", 1);
+			t = helper.doCheck("com.ipd.jsf.service.RegistryService", "127.0.0.1", 40660, "reg1", 1);
 			Assert.assertEquals(helper.TELNET_NOTEXIST, t);
 
 			//检查端口错误的情况
-			t = helper.doCheck("com.ipd.jsf.service.RegistryService", "192.168.150.121", 40661, "reg", 1);
+			t = helper.doCheck("com.ipd.jsf.service.RegistryService", "127.0.0.1", 40661, "reg", 1);
 			Assert.assertEquals(helper.TELNET_NOTCONNECT, t);
 
 			//检查实例正确的情况（实例key可能会变化，需要修改下）
-			boolean b = helper.checkInstanceKey("192.168.150.121", 40660, "192.168.150.121_10742_57088");
+			boolean b = helper.checkInstanceKey("127.0.0.1", 40660, "127.0.0.1_10742_57088");
 			Assert.assertEquals(true, b);
 
 			//检查注册中心地址正确的情况
-			helper.getRegistryList().add("192.168.150.121:40660");
-			helper.getRegistryList().add("192.168.150.119:40660");
-			b = helper.checkRegistry("192.168.150.121", 22000);
+			helper.getRegistryList().add("127.0.0.1:40660");
+			helper.getRegistryList().add("127.0.0.1:40660");
+			b = helper.checkRegistry("127.0.0.1", 22000);
 			Assert.assertEquals(true, b);
 
 			//检查注册中心地址错误的情况
 			helper.getRegistryList().clear();
-			helper.getRegistryList().add("192.168.151.139:40660");
-			helper.getRegistryList().add("192.168.151.142:40660");
-			b = helper.checkRegistry("192.168.150.121", 22000);
+			helper.getRegistryList().add("127.0.0.1:40660");
+			helper.getRegistryList().add("127.0.0.1:40660");
+			b = helper.checkRegistry("127.0.0.1", 22000);
 			Assert.assertEquals(false, b);
 
 			//检查jsf版本正确的情况
-			String jsfVersion = helper.getJsfVersion("192.168.150.121", 40660);
+			String jsfVersion = helper.getJsfVersion("127.0.0.1", 40660);
 			System.out.println(jsfVersion);
 			//jsf版本有可能会变，如果变化，需要修改下面的jsf版本
 			Assert.assertEquals("JSF1.2.2_201506150925", jsfVersion);

@@ -32,7 +32,7 @@ public class GenerateRegular {
         System.out.println(getPointRegular(t1, t2) + ", elapse:" + (System.currentTimeMillis() - start));
         System.out.println(getMeddle(122, getUpLimit(122), 188));
         
-        System.out.println(getIpRegular("192.168.1.23-41"));
+        System.out.println(getIpRegular("127.0.0.1-41"));
     }
     
     public static String getIpRegular(String ip) {
@@ -46,7 +46,7 @@ public class GenerateRegular {
     	} else {
     		String value = ip.substring(ip.lastIndexOf(".") + 1);
     		try {
-				Integer.parseInt(value);//如果是单个ip，没有通配符：比如：192.168.1.1
+				Integer.parseInt(value);//如果是单个ip，没有通配符
 				regular = ip;
 			} catch (Exception e) {
 			}

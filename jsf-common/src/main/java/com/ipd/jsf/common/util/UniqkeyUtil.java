@@ -88,9 +88,4 @@ public class UniqkeyUtil {
         return Integer.parseInt(insKey.substring(insKey.indexOf(SPLITSTR_UNDERLINE) + 1, insKey.lastIndexOf(SPLITSTR_UNDERLINE)));
     }
 
-    public static void main(String[] args) {
-        System.out.println(getIpFromInsKey("10.12.122.28_2064_35709"));
-        System.out.println(getPidFromInsKey("10.12.122.28_2064_35709"));
-        System.out.println(getAliasFromServerUniqKey("125.32.0.2.;2356;chq;4;2451"));
-    }
 }

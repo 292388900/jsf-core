@@ -5,12 +5,6 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
     http://jsf.ipd.com/schema/jsf  http://jsf.ipd.com/schema/jsf/jsf.xsd" default-lazy-init="false">
 
-    <!--  url="hessian://10.12.120.121:20880/com.ipd.testsaf.CallbackService?addListener.1.callback=true&amp;callbacks=100"> -->
-    <!-- url="hessian://10.12.120.121:20880/com.ipd.testsaf.CallbackService?sayHelloCallback.1.callback=true;hessian://10.12.120.121:20881/com.ipd.testsaf.CallbackService?sayHelloCallback.1.callback=true" > -->
-
-<!--     <saf:registry id="safRegistry" protocol="safRegistry" -->
-<!--                   address="192.168.209.74:2181,192.168.209.79:2181,192.168.229.53:2181,192.168.229.54:2181,192.168.229.55:2181"/> -->
-
     <jsf:consumer id="registryService" interface="com.ipd.jsf.service.RegistryService"
                    url="saf://127.0.0.1:40990" retries="0"
                    protocol="jsf" alias="saf" timeout="60000" proxy="jdk">

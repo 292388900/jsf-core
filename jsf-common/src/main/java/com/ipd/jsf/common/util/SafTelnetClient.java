@@ -491,13 +491,11 @@ public class SafTelnetClient {
 
     public static void main(String[] args) {
         String[] cmds = new String[]{"ls"};
-//		String[] cmds = new String[] { "ls -l", "count com.ipd.testsaf.HelloService", "trace com.ipd.testsaf.HelloService"};
         SafTelnetClient client = null;
         long time0 = System.currentTimeMillis();
         try {
             for (int i = 0; i < cmds.length; i++) {
                 client = new SafTelnetClient("1222.1212.12", 20880, 5000);
-//				client = new DubboTelnetClient("10.12.120.121", 20880,5000);
                 client.setReadEncoding("gbk");
                 String res = client.send(cmds[i]);
                 System.out.println("命令:" + cmds[i] + "   返回");
