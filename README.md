@@ -1,35 +1,44 @@
-# jsf-core
+JSF- An RPC library and framework
+===================================
 
-## What is JSF-CORE?
-   JSF-core is jsf server console which provide management for JSF client. The following functions are provided, such as:registration management,schedule task. In the future, we will also provide more extensive management functions.
+# What is JSF
+  
+JSF is an RPC framework developed by the **TIG**(Technical Infrastructure Group).
+   
+It is now supporting thouthands of applications, providing over 200 billions of RPC calls everyday. During the China's big shopping festivals like Double 11 and 618, the total number of JSF-based RPC calls can reach 400 billion.
+   
+## What is JSF-core
+ 
+ Basically, JSF-core is the backend part of the JSF framework. It provides many underlying services like service registration and task scheduling.  Hopefully, more and more features would be added in as time goes on.
 
-## What does JSF-CORE do?
+## Features of JSF-core
 
-* Registry center
-    *  service registry
-    *  service subscribe
-    *  service discover
-    *  service push
-    *  service configration push
-    *  service health monitor
+* Registration Center
+    *  service registering
+    *  service subscribing
+    *  service discovering
+    *  service pushing
+    *  service configuration pushing
+    *  service health monitoring
 
-* worker is schedule task
-    * monitor the aviable status of registry
-    * Delete expired data in mysql
-    * count number of tcp 
-    * count number of provider
-    * count number of consumer
-    
-## Database
-We use mysql database. We should install mysql before. There are two databases: saf21 and saf_registry, which sql files were In the following directory: ${jsf-core}/jsf-common/sql. 
+*  Task Scheduling
+    * monitoring the availability status of Registration Center
+    * removal of expired data
+    * counting TCP connection, providers and consumers
 
-## dependencies
+# Dependencies  
+
 * Zookeeper 3.0+
 
 * Mysql 5.5+
 
 * Maven 3.1.x
 
-* JDK1.8.0+
+* JDK 1.8+
 
 * [JSF SDK](https://github.com/tigcode/jsf-sdk)
+
+# More details
+
+## Database
+Currently, MySQL was chosen as the database server. There are two databases saf21 and saf_registry on the server, with SQL scripts located in the directory ${jsf-core}/jsf-common/sql. 
